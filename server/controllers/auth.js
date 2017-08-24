@@ -124,7 +124,7 @@ exports.postReset = (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
-        user: process.env.SENDGRID_USER,
+        user: process.env.SENDGRID_USERNAME,
         pass: process.env.SENDGRID_PASSWORD,
       },
     });
@@ -197,7 +197,7 @@ exports.postForgot = (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
-        user: process.env.SENDGRID_USER,
+        user: process.env.SENDGRID_USERNAME,
         pass: process.env.SENDGRID_PASSWORD,
       },
     });
@@ -215,6 +215,7 @@ exports.postForgot = (req, res, next) => {
         req.flash('info', `An e-mail has been sent to ${user.email} with further instructions.`);
       })
       .catch((err) => {
+        console.log(err);
         req.flash('danger', 'An error has occurred and the email has not been sent. Please try again.');
       });
   };
