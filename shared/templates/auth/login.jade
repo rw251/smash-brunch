@@ -8,17 +8,21 @@
     h3.hidden-xs.hidden-sm Sign in
     form.signin(action='/login', method='post')
       .row
-        .col-sm-12.col-xs-6
-          .form-group
+        .col-sm-12.col-xs-9
+          .form-group.clearfix
             label.col-sm-2.control-label.hidden-xs(for='email') Email
             .col-lg-8.col-sm-10
               input#email.form-control(required='', type='email', name='email', placeholder='Email')
-        .col-sm-12.col-xs-3
-          .form-group
+        .col-xs-3.hidden-sm.hidden-md.hidden-lg
+          button.btn.btn-primary(type='submit') Sign in
+        .col-sm-12.col-xs-9
+          .form-group.clearfix
             label.col-sm-2.control-label.hidden-xs(for='password') Password
             .col-lg-8.col-sm-10
               input#password.form-control(required='', type='password', name='password', placeholder='Password')
-        .col-sm-12.col-xs-3
+        .col-xs-3.hidden-sm.hidden-md.hidden-lg
+          a(href='/forgot')  Forgot password?
+        .col-sm-12.hidden-xs
           .form-group
             .col-lg-8.col-md-offset-2.col-md-10
               button.btn.btn-primary(type='submit') Sign in
