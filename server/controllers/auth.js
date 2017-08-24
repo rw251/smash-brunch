@@ -3,6 +3,7 @@ const crypto = bluebird.promisifyAll(require('crypto'));
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const User = require('../models/User');
+const config = require('../config');
 
 /**
  * GET /login
@@ -124,8 +125,8 @@ exports.postReset = (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
-        user: process.env.SENDGRID_USERNAME,
-        pass: process.env.SENDGRID_PASSWORD,
+        user: config.email.username,
+        pass: config.email.password,
       },
     });
     const mailOptions = {
@@ -197,8 +198,8 @@ exports.postForgot = (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
-        user: process.env.SENDGRID_USERNAME,
-        pass: process.env.SENDGRID_PASSWORD,
+        user: config.email.username,
+        pass: config.email.password,
       },
     });
     const mailOptions = {

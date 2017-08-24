@@ -24,7 +24,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
 
   mongoose.set('debug', DEBUG);
   mongoose.Promise = global.Promise;
-  mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(config.mongoUrl);
   mongoose.connection.on('error', (err) => {
     pino.error(err);
     pino.info('MongoDB connection error. Please make sure MongoDB is running.');
@@ -32,7 +32,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
   });
 
   let port = PORT || config.server.port;
-  if (!port) port = process.env.PORT || '3000';
+  if (!port) port = config.server.port || '3333';
   app.set('port', port);
   app.set('views', [path.join(__dirname, 'server/views')]);// , path.join(__dirname, 'shared/views')]);
   app.set('view engine', 'pug');
