@@ -1,5 +1,5 @@
 // Change this to force update 
-var VERSION = 'v1.0.4';
+var VERSION = 'v1.0.5';
 var CACHE = 'cache-update-and-refresh-' + VERSION;
 
 var cachedLocalItems = [
@@ -28,10 +28,26 @@ allCachedItems.push('/html/offline.html');
 
 self.addEventListener('install', function (e) {
   // Add the following assets on install
-  console.log('/sw.js -> Install');
+  console.log('/sw.js -> Install to ' + CACHE);
   e.waitUntil(caches.open(CACHE).then(function (cache) {
     cache.addAll(allCachedItems)
   }));
+});
+
+self.addEventListener('activate', function(event) {
+  var cacheWhitelist = [CACHE];
+
+  // Removing old caches
+  event.waitUntil(
+    caches.keys().then(function(keyList) {
+      return Promise.all(keyList.map(function(key) {
+        if (cacheWhitelist.indexOf(key) === -1) {
+          console.log('Removing old cache: ' + key);
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
 });
 
 self.addEventListener('fetch', function (evt) {
