@@ -20,7 +20,7 @@ const ENV = {
   PASSPORT_SECRET: mustExist('PASSPORT_SECRET'),
 
   // server details
-  SERVER_PORT: process.env.SERVER_PORT,
+  SERVER_PORT: process.env.PORT,
   // SERVER_URL: mustExist('SERVER_URL'),
 
   SENDGRID_USERNAME: mustExist('SENDGRID_USERNAME'),
