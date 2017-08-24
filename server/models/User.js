@@ -32,10 +32,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: [validatePresenceOf, 'Password cannot be blank'],
   },
-  password_recovery_code: {
+  passwordResetToken: {
     type: String,
   },
-  password_recovery_expiry: {
+  passwordResetExpires: {
     type: Date,
   },
   provider: {
@@ -43,11 +43,6 @@ const userSchema = new mongoose.Schema({
     default: 'local',
   },
   salt: String,
-  facebook: {},
-  twitter: {},
-  github: {},
-  google: {},
-  linkedin: {},
 
   practices: { type: Array },
 }, { timestamps: true });

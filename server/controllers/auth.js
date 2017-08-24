@@ -182,7 +182,7 @@ exports.postForgot = (req, res, next) => {
       .then((userFromDb) => {
         let user = userFromDb;
         if (!user) {
-          req.flash('danger', 'Account with that email address does not exist.');
+          req.flash('info', `An e-mail has been sent to ${req.body.email} with further instructions.`);
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
@@ -210,9 +210,12 @@ exports.postForgot = (req, res, next) => {
         http://${req.headers.host}/reset/${token}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
-    transporter.sendMail(mailOptions)
+    return transporter.sendMail(mailOptions)
       .then(() => {
         req.flash('info', `An e-mail has been sent to ${user.email} with further instructions.`);
+      })
+      .catch((err) => {
+        req.flash('danger', 'An error has occurred and the email has not been sent. Please try again.');
       });
   };
 

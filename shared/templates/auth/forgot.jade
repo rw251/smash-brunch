@@ -12,9 +12,7 @@
     .form-group
       .col-md-offset-4.col-md-8
         button.btn.btn-primary(type='submit') Send reset link
-    if message && message.success
-      .text-center.text-success
-        strong= message.success
-    if message && message.error
-      .text-center.text-danger
-        strong= message.error
+    - if (flash && flash.shift)
+      while message = flash.shift() 
+        .alert.animated.fadeIn(class='alert-' + message.type)
+          p= message.message
