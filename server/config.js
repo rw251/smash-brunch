@@ -17,11 +17,11 @@ const ENV = {
   MONGO_URL: mustExist('MONGODB_URI'),
 
   // passport secret for expressjs authentication
-  PASSPORT_SECRET: mustExist('GETSET_PASSPORT_SECRET'),
+  PASSPORT_SECRET: mustExist('PASSPORT_SECRET'),
 
   // server details
-  SERVER_PORT: process.env.GETSET_SERVER_PORT,
-  // SERVER_URL: mustExist('PINGR_SERVER_URL'),
+  SERVER_PORT: process.env.SERVER_PORT,
+  // SERVER_URL: mustExist('SERVER_URL'),
 
 };
 
