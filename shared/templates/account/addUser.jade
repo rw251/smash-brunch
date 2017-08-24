@@ -1,0 +1,32 @@
+.container-small.container
+  .btn-toolbar
+    a.btn.btn-info(href='/users') Back to user list
+  form(action='/users/add', method='post')
+    .form-group.input-group
+      span.input-group-addon
+        i.fa.fa-user
+      input.form-control(type='text', name='name', placeholder='Full name', required='', autofocus='')
+    .form-group.input-group
+      span.input-group-addon
+        i.fa.fa-envelope
+      input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='')
+    .form-group.input-group
+      span.input-group-addon
+        i.fa.fa-key
+      input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
+    .form-group
+      label.cr-styled
+        input(name='isAdmin', type='checkbox')
+        i.fa
+      |               Is Admin
+    .form-group
+      label.cr-styled
+        input(name='isCCG', type='checkbox')
+        i.fa
+      |               Is CCG
+    button.btn.btn-purple.btn-block.history(type='submit')
+      | Create 
+      span.fa.fa-arrow-circle-right
+    - if (flash && flash.shift)
+      while message = flash.shift()
+        div.alert(class='alert-' + message.type,role="alert")= message.message

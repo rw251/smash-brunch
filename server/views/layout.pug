@@ -1,0 +1,112 @@
+doctype html
+html.no-js(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='theme-color' content='#4DA5F4')
+    meta(name='csrf-token', content=_csrf)
+    link(rel="icon",href="/favicon.ico?v=2",type="image/x-icon")
+    title SMASH
+    link(rel="stylesheet" href="/css/app.css")
+
+    link(rel="apple-touch-icon", sizes="180x180", href="/img/smash-180x180.png")
+    link(rel="manifest", href="/manifest")
+    meta(name="theme-color", content="#006df0")
+
+    noscript
+      link(href="https://fonts.googleapis.com/css?family=PT+Mono|PT+Sans:400,700",rel="stylesheet")
+
+    // remove this if you use Modernizr
+    // replaces the 'no-js' class with 'js'
+    script.
+      (function(e,t,n){var r=e.querySelectorAll("html")[0];r.className=r.className.replace(/(^|\s)no-js(\s|$)/,"$1js$2")})(document,window,0);
+
+  body.event-tracker
+    nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
+      .container-fluid
+        .navbar-header
+          if global.authenticated
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+          .navbar-brand
+            span SMASH
+        .collapse.navbar-collapse
+          ul.nav.navbar-nav
+            if global.authenticated
+              li(class=(title == 'Single Practice') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/') My Practice
+                a.hideWhenSmall(href='/') Single Practice
+              li(class=(title == 'All Practices') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/ccg') All
+                a.hideWhenSmall(href='/ccg') All Practices
+              li(class=(title == 'Indicator Evidence Summaries') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/evidence') Evidence
+                a.hideWhenSmall(href='/evidence') Indicator Evidence Summaries
+              li(class=(title == 'Contact / Help') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/help') Help
+                a.hideWhenSmall(href='/help') Contact / Help
+          ul.nav.navbar-nav.navbar-right
+            if global.authenticated
+              li.dropdown(class=(title == 'Account Management') ? 'active' : undefined)
+                a.dropdown-toggle(href='#', data-toggle='dropdown')
+                  span= global.user.name
+                  i.caret
+                ul.dropdown-menu
+                  li
+                    a(href='/password/change') Change password
+                  li.divider
+                  if global.isAdmin
+                    li
+                      a(href='/admin') Admin
+                    li
+                      a(href='/users') Users
+                    li.divider
+                  li
+                    a(href='/logout') Signout
+              input#userLoggedIn(type='hidden')
+              input#userName(type='hidden', value=global.user.name)
+              input#userEmail(type='hidden', value=global.user.email)
+
+    section#mainContent.main
+      block content
+
+    script(src='/js/libraries.js')
+    script(src='/js/app.js')
+    script.
+      require("application").init();
+    script.
+      // Add the google fonts as a deferred resource
+      var deferredFonts = document.createElement('link');
+      deferredFonts.rel = 'stylesheet';
+      deferredFonts.href = 'https://fonts.googleapis.com/css?family=PT+Mono|PT+Sans:400,700';
+      var godefer = document.getElementsByTagName('link')[0];
+      godefer.parentNode.insertBefore(deferredFonts, godefer);
+    script.
+      // Add bluebird cdn if no promises
+      // First use modernizr scipt to detect if promises enables
+      var isPromiseImplemented = 'Promise' in window &&
+        // Some of these methods are missing from
+        // Firefox/Chrome experimental implementations
+        'resolve' in window.Promise &&
+        'reject' in window.Promise &&
+        'all' in window.Promise &&
+        'race' in window.Promise &&
+        // Older version of the spec had a resolver object
+        // as the arg rather than a function
+        (function() {
+          var resolve;
+          new window.Promise(function(r) { resolve = r; });
+          return typeof resolve === 'function';
+        }());
+      if(!isPromiseImplemented) {
+        var bluebirdScript = document.createElement('script');
+        bluebirdScript.src = "https://cdn.jsdelivr.net/bluebird/latest/bluebird.core.min.js";
+        var bb = document.getElementsByTagName('script')[0];
+        bb.parentNode.insertBefore(bluebirdScript, bb);
+      }
+
+
