@@ -44,7 +44,6 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     app.use(forceSsl);
   }
 
-  // uncomment after placing your favicon in /public
   app.use(favicon(path.join(__dirname, PATH, 'favicon.ico')));
   app.use(logger());
   app.use(bodyParser.json());

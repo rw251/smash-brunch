@@ -1,4 +1,8 @@
 .container.container-small
+  - if (flash && flash.shift)
+    while message = flash.shift() 
+      .alert.animated.fadeIn(class='alert-' + message.type)
+        p= message.message
   .btn-toolbar
     a.btn.btn-info(href='/') Back to SMASH
   h1 Reset password
@@ -12,7 +16,3 @@
     .form-group
       .col-md-offset-4.col-md-8
         button.btn.btn-primary(type='submit') Send reset link
-    - if (flash && flash.shift)
-      while message = flash.shift() 
-        .alert.animated.fadeIn(class='alert-' + message.type)
-          p= message.message

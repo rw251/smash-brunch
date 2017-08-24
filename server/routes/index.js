@@ -57,8 +57,6 @@ module.exports = function routeIndex() {
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
 
   router.get('/logout', authController.logout);
-  router.get('/reset/:token', authController.getReset);
-  router.post('/reset/:token', authController.postReset);
   router.get('/signup', authController.getSignup);
   router.post('/signup', authController.postSignup);
   router.get('/account', passportConfig.isAuthenticated, authController.getAccount);

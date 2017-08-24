@@ -64,7 +64,7 @@ exports.logout = (req, res) => {
  * Reset Password page.
  */
 
-exports.getReset = (req, res, next) => {
+exports.reset = (req, res, next) => {
   if (req.isAuthenticated()) {
     return res.redirect('/');
   }
@@ -135,9 +135,13 @@ exports.postReset = (req, res, next) => {
       subject: 'Your Hackathon Starter password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`,
     };
-    transporter.sendMail(mailOptions)
+    return transporter.sendMail(mailOptions)
       .then(() => {
-        req.flash('success', 'Success! Your password has been changed.');
+        // req.flash('success', 'Success! Your password has been changed.');
+      })
+      .catch((err) => {
+        console.log(err);
+        req.flash('danger', 'An error has occurred. Please try again.');
       });
   };
 
@@ -208,7 +212,7 @@ exports.postForgot = (req, res, next) => {
       subject: 'Reset your password on Hackathon Starter',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
-        http://${req.headers.host}/reset/${token}\n\n
+        https://${req.headers.host}/reset/${token}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
     return transporter.sendMail(mailOptions)
