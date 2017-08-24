@@ -131,9 +131,10 @@ exports.postReset = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Your Hackathon Starter password has been changed',
-      text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`,
+      from: config.email.fromPasswordReset,
+      subject: 'Your SMASH password has been changed',
+      text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n\n
+      If you have not just changed your password then please contact the support team at ${config.email.support}.\n`,
     };
     return transporter.sendMail(mailOptions)
       .then(() => {
@@ -208,12 +209,12 @@ exports.postForgot = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Reset your password on Hackathon Starter',
+      from: user.email.fromPasswordResetLink,
+      subject: 'Reset your SMASH password',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
         https://${req.headers.host}/reset/${token}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+        If you did not request this, please contact the support team at ${config.email.support}.\n`,
     };
     return transporter.sendMail(mailOptions)
       .then(() => {

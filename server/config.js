@@ -25,6 +25,12 @@ const ENV = {
 
   SENDGRID_USERNAME: mustExist('SENDGRID_USERNAME'),
   SENDGRID_PASSWORD: mustExist('SENDGRID_PASSWORD'),
+
+  EMAIL_SENDER: mustExist('DEFAULT_EMAIL_SENDER'),
+  EMAIL_PASSWORD_RESET_LINK: process.env.EMAIL_PASSWORD_RESET_LINK,
+  EMAIL_PASSWORD_RESET: process.env.EMAIL_PASSWORD_RESET,
+
+  EMAIL_SUPPORT: mustExist('SUPPORT_EMAIL'),
 };
 
 module.exports = {
@@ -39,6 +45,10 @@ module.exports = {
   email: {
     username: ENV.SENDGRID_USERNAME,
     password: ENV.SENDGRID_PASSWORD,
+    from: ENV.EMAIL_SENDER,
+    fromPasswordResetLink: ENV.EMAIL_PASSWORD_RESET_LINK || ENV.EMAIL_SENDER,
+    fromPasswordReset: ENV.EMAIL_PASSWORD_RESET || ENV.EMAIL_SENDER,
+    support: ENV.EMAIL_SUPPORT,
   },
   mode: process.env.MODE || 'development',
 };
