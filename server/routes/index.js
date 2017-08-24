@@ -57,13 +57,13 @@ module.exports = function routeIndex() {
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
 
   router.get('/logout', authController.logout);
+
   router.get('/signup', authController.getSignup);
   router.post('/signup', authController.postSignup);
   router.get('/account', passportConfig.isAuthenticated, authController.getAccount);
   router.post('/account/profile', passportConfig.isAuthenticated, authController.postUpdateProfile);
   router.post('/account/password', passportConfig.isAuthenticated, authController.postUpdatePassword);
   router.post('/account/delete', passportConfig.isAuthenticated, authController.postDeleteAccount);
-  router.get('/account/unlink/:provider', passportConfig.isAuthenticated, authController.getOauthUnlink);
 
   router.get('*', isAuthenticated, (req, res, next) => {
     next();

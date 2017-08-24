@@ -378,21 +378,3 @@ exports.postDeleteAccount = (req, res, next) => {
   });
 };
 
-/**
- * GET /auth/unlink/:provider
- * Unlink OAuth provider.
- */
-
-exports.getOauthUnlink = (req, res, next) => {
-  const provider = req.params.provider;
-  User.findById(req.user.id, (err, userFromDb) => {
-    const user = userFromDb;
-    if (err) { return next(err); }
-    user[provider] = undefined;
-    user.tokens = user.tokens.filter(token => token.kind !== provider);
-    return user.save((errSave) => {
-      if (errSave) { return next(errSave); }
-      return res.redirect('/auth');
-    });
-  });
-};

@@ -1,5 +1,6 @@
-// Change this to force update v1.0.4
-var CACHE = 'cache-update-and-refresh';
+// Change this to force update 
+var VERSION = 'v1.0.4';
+var CACHE = 'cache-update-and-refresh-' + VERSION;
 
 var cachedLocalItems = [
   '/css/app.css',
@@ -23,7 +24,7 @@ var cachedRemoteItems = [
 ];
 
 var allCachedItems = cachedLocalItems.concat(cachedRemoteItems);
-allCachedItems.push('/html/offline.html?v=1');
+allCachedItems.push('/html/offline.html');
 
 self.addEventListener('install', function (e) {
   // Add the following assets on install
@@ -47,7 +48,7 @@ self.addEventListener('fetch', function (evt) {
   } else {
     evt.respondWith(fetch(evt.request).catch(function () {
       console.log("Error caught - /html/offline.html returned");
-      return caches.match('/html/offline.html?v=1');
+      return caches.match('/html/offline.html');
     }));
   }
 });
