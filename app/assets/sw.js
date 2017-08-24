@@ -23,7 +23,7 @@ var cachedRemoteItems = [
 ];
 
 var allCachedItems = cachedLocalItems.concat(cachedRemoteItems);
-allCachedItems.push('/html/offline.html');
+allCachedItems.push('/html/offline.html?v=1');
 
 self.addEventListener('install', function (e) {
   // Add the following assets on install
@@ -47,7 +47,7 @@ self.addEventListener('fetch', function (evt) {
   } else {
     evt.respondWith(fetch(evt.request).catch(function () {
       console.log("Error caught - /html/offline.html returned");
-      return caches.match('/html/offline.html');
+      return caches.match('/html/offline.html?v=1');
     }));
   }
 });
