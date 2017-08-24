@@ -552,3 +552,20 @@ $navbarToggle:600;
       display: block;
    }
 }
+
+/* Spacing in login form for small screens */
+.form-inline.nice-spacing label,
+.form-inline.nice-spacing button {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.login-well {
+  margin-top: 100px;
+}
+
+@media only screen and (max-width: 991px) {
+  .login-well {
+    margin-top: 0;
+  }
+}
