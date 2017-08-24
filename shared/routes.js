@@ -20,4 +20,7 @@ module.exports = [
   { url: '/forgot', type: 'post', controller: ctrl.auth, method: 'postForgot' },
   { url: '/reset/:token', type: 'get', controller: ctrl.auth, method: 'reset' },
   { url: '/reset/:token', type: 'post', controller: ctrl.auth, method: 'postReset' },
+
+  { url: '/password/change', type: 'get', needsAuth: true, controller: ctrl.auth, method: 'changePassword' },
+  { url: '/password/change', type: 'post', needsAuth: true, controller: ctrl.auth, method: 'postChangePassword' },
 ];

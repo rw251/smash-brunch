@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const passport = require('passport');
 const User = require('../models/User');
 const config = require('../config');
+const utils = require('./utils');
 
 /**
  * GET /login
@@ -121,7 +122,7 @@ exports.postReset = (req, res, next) => {
       });
 
   const sendResetPasswordEmail = (user) => {
-    if (!user) { return; }
+    if (!user) { return false; }
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
@@ -198,7 +199,7 @@ exports.postForgot = (req, res, next) => {
       });
 
   const sendForgotPasswordEmail = (user) => {
-    if (!user) { return; }
+    if (!user) { return false; }
     const token = user.passwordResetToken;
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
@@ -233,125 +234,31 @@ exports.postForgot = (req, res, next) => {
     .catch(next);
 };
 
-
 /**
- * GET /signup
- * Signup page.
+ * GET /password/change
+ * Change password page.
  */
 
-exports.getSignup = (req, res) => {
-  if (req.user) {
-    return res.redirect('/');
-  }
-  return res.render('auth/signup', {
-    title: 'Create Account',
-  });
+exports.changePassword = (req, res) => {
+  const userObject = utils.getUserObject(req.user);
+  userObject.title = 'Change Password';
+  res.render('auth/changePassword', userObject);
 };
 
 /**
- * POST /signup
- * Create a new local auth.
- */
-
-exports.postSignup = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
-  req.sanitize('email').normalizeEmail({ remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    req.flash('danger', errors[0].msg);
-    return res.redirect('/signup');
-  }
-
-  const user = new User({
-    email: req.body.email,
-    password: req.body.password,
-  });
-
-  return User.findOne({ email: req.body.email }, (err, existingUser) => {
-    if (err) { return next(err); }
-    if (existingUser) {
-      req.flash('danger', 'Account with that email address already exists.');
-      return res.redirect('/signup');
-    }
-    return user.save((errUserSave) => {
-      if (errUserSave) { return next(errUserSave); }
-      return req.logIn(user, (errLogin) => {
-        if (errLogin) {
-          return next(errLogin);
-        }
-        return res.redirect('/');
-      });
-    });
-  });
-};
-
-/**
- * GET /auth
- * Profile page.
- */
-
-exports.getAccount = (req, res) => {
-  res.render('auth/profile', {
-    title: 'Account Management',
-    user: req.user,
-  });
-};
-
-/**
- * POST /auth/profile
- * Update profile information.
- */
-
-exports.postUpdateProfile = (req, res, next) => {
-  req.assert('email', 'Please enter a valid email address.').isEmail();
-  req.sanitize('email').normalizeEmail({ remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    req.flash('danger', errors[0].msg);
-    return res.redirect('/auth');
-  }
-
-  return User.findById(req.user.id, (err, userFromDb) => {
-    const user = userFromDb;
-    if (err) { return next(err); }
-    user.email = req.body.email || '';
-    user.profile.name = req.body.name || '';
-    user.profile.gender = req.body.gender || '';
-    user.profile.location = req.body.location || '';
-    user.profile.website = req.body.website || '';
-    return user.save((errSave) => {
-      if (errSave) {
-        if (errSave.code === 11000) {
-          req.flash('danger', 'The email address you have entered is already associated with an account.');
-          return res.redirect('/auth');
-        }
-        return next(errSave);
-      }
-      return res.redirect('/auth');
-    });
-  });
-};
-
-/**
- * POST /auth/password
+ * POST /password/change
  * Update current password.
  */
 
-exports.postUpdatePassword = (req, res, next) => {
+exports.postChangePassword = (req, res, next) => {
   req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('confirm', 'Passwords do not match').equals(req.body.password);
 
   const errors = req.validationErrors();
 
   if (errors) {
     req.flash('danger', errors[0].msg);
-    return res.redirect('/auth');
+    return res.redirect('/password/change');
   }
 
   return User.findById(req.user.id, (err, userFromDb) => {
@@ -360,21 +267,9 @@ exports.postUpdatePassword = (req, res, next) => {
     user.password = req.body.password;
     return user.save((errSave) => {
       if (errSave) { return next(errSave); }
-      return res.redirect('/auth');
+      req.flash('info', 'Password successfully changed.');
+      return res.redirect('/password/change');
     });
-  });
-};
-
-/**
- * POST /auth/delete
- * Delete user account.
- */
-
-exports.postDeleteAccount = (req, res, next) => {
-  User.remove({ _id: req.user.id }, (err) => {
-    if (err) { return next(err); }
-    req.logout();
-    return res.redirect('/');
   });
 };
 
