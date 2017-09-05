@@ -31,7 +31,7 @@ const isLoggedIn = (ctx, next) => {
 
 const updateSelectedTab = (ctx, next) => {
   $('.navbar-nav li').removeClass('active');
-  $(`.navbar-nav li a[href="${ctx.pathname}"]`).parent().addClass('active');
+  $(`.navbar-nav li a[href="/${ctx.pathname.split('/')[1]}"]`).parent().addClass('active');
   next();
 };
 

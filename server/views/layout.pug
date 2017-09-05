@@ -38,8 +38,8 @@ html.no-js(lang='en')
           ul.nav.navbar-nav
             if global.authenticated
               li(class=(title == 'Single Practice') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
-                a.showWhenSmall(href='/') My Practice
-                a.hideWhenSmall(href='/') Single Practice
+                a.showWhenSmall(href='/practice') My Practice
+                a.hideWhenSmall(href='/practice') Single Practice
               li(class=(title == 'All Practices') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
                 a.showWhenSmall(href='/ccg') All
                 a.hideWhenSmall(href='/ccg') All Practices

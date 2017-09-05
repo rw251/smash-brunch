@@ -11,10 +11,11 @@ const App = {
       global.user = {};
       global.user.name = $('#userName').val();
       global.user.email = $('#userEmail').val();
+      global.server = true;
 
       console.log(global);
 
-      routes.start({ dispatch: false }); // dispatch - whether to perform initial dispatch
+      routes.start({ dispatch: true }); // dispatch - whether to perform initial dispatch
       main.init();
     });
   },

@@ -1,2 +1,5 @@
 h1 The home page
+select#practiceList
+  each practice in practices
+    option(value=practice._id, selected=practice._id===+selectedId)= practice.short_name
 p= "The currently logged in user is " + global.user.name

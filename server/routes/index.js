@@ -6,6 +6,7 @@ const indicatorsController = require('../controllers/indicators');
 const helpController = require('../controllers/help');
 const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
+const apiController = require('../controllers/api');
 const routes = require('../../shared/routes');
 const ctrl = require('../../shared/controllers');
 const validateControllers = require('../../shared/validate');
@@ -55,8 +56,13 @@ module.exports = function routeIndex() {
   // api methods for returning JSON data to populate some views
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
+  router.get('/api/practices', isAuthenticated, apiController.list);
 
   router.get('/logout', authController.logout);
+
+  router.get('/', isAuthenticated, (req, res) => {
+    res.redirect('/practice');
+  });
 
   router.get('*', isAuthenticated, (req, res, next) => {
     next();

@@ -12,7 +12,7 @@ const utils = require('./utils');
  */
 
 exports.login = (req, res) => {
-  if (req.user) return res.redirect('/');
+  if (req.user) return res.redirect('/practice');
   return res.render('auth/login', { title: 'Login' });
 };
 
@@ -41,7 +41,7 @@ exports.postLogin = (req, res, next) => {
     }
     return req.logIn(user, (errLogin) => {
       if (errLogin) { return next(errLogin); }
-      let red = req.session.redirect_to || '/';
+      let red = req.session.redirect_to || '/practice';
       if (req.body.hash) red += `#${req.body.hash}`;
       req.session.redirect_to = null;
       delete req.session.redirect_to;
@@ -57,7 +57,7 @@ exports.postLogin = (req, res, next) => {
 
 exports.logout = (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect('/login');
 };
 
 /**
@@ -67,7 +67,7 @@ exports.logout = (req, res) => {
 
 exports.reset = (req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.redirect('/');
+    return res.redirect('/practice');
   }
   return User
     .findOne({ passwordResetToken: req.params.token })
@@ -149,7 +149,7 @@ exports.postReset = (req, res, next) => {
 
   return resetPassword()
     .then(sendResetPasswordEmail)
-    .then(() => { if (!res.finished) res.redirect('/'); })
+    .then(() => { if (!res.finished) res.redirect('/practice'); })
     .catch(err => next(err));
 };
 
@@ -159,7 +159,7 @@ exports.postReset = (req, res, next) => {
  */
 
 exports.forgot = (req, res) => {
-  if (req.isAuthenticated()) return res.redirect('/');
+  if (req.isAuthenticated()) return res.redirect('/practice');
   return res.render('auth/forgot', { title: 'Forgot Password' });
 };
 

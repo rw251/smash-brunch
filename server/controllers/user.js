@@ -6,14 +6,16 @@ const utils = require('./utils');
  */
 
 const listOfUsers = (callback) => {
-  User.find({}, (err, users) => {
+  // lean true returns json objects i.e. smaller but can't then save/update them
+  User.find().lean().exec((err, users) => {
     if (err) { return callback(err); }
     return callback(null, users);
   });
 };
 
 const getUser = (email, callback) => {
-  User.findOne({ email }, (err, user) => {
+  // lean true returns json objects i.e. smaller but can't then save/update them
+  User.findOne({ email }).lean().exec((err, user) => {
     if (err) { return callback(err); }
     return callback(null, user);
   });

@@ -1,7 +1,8 @@
 const ctrl = require('./controllers');
 
 module.exports = [
-  { url: '/', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
+  { url: '/practice', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
+  { url: '/practice/:id', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/ccg', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
   { url: '/evidence', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
   { url: '/help', type: 'get', needsAuth: true, controller: ctrl.help, method: 'index' },
