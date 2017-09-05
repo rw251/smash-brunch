@@ -2,9 +2,9 @@ const ctrl = require('./controllers');
 
 module.exports = [
   { url: '/', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
-  { url: '/ccg', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
-  { url: '/evidence', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
-  { url: '/help', type: 'get', needsAuth: true, controller: ctrl.help, method: 'index' },
+  { url: '/page2', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
+  { url: '/page3', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
+  { url: '/page4', type: 'get', needsAuth: true, controller: ctrl.help, method: 'index' },
 
   { url: '/users', type: 'get', needsAuth: true, needsAdmin: true, controller: ctrl.user, method: 'list' },
   { url: '/users/add', type: 'get', needsAuth: true, needsAdmin: true, controller: ctrl.user, method: 'add' },

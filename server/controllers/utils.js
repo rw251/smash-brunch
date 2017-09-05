@@ -4,4 +4,5 @@ exports.getUserObject = user => ({
     isAdmin: user.isAdmin(),
     user,
   },
+  server: true,
 });

@@ -1,4 +1,4 @@
-const indicatorsTemplate = require('../../shared/templates/indicators.jade');
+const indicatorsTemplate = require('../../shared/templates/page3.jade');
 const defaultController = require('./default');
 
 // params, state, url

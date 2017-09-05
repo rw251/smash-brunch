@@ -1,4 +1,4 @@
-const ccgTemplate = require('../../shared/templates/ccg.jade');
+const ccgTemplate = require('../../shared/templates/page2.jade');
 const defaultController = require('./default');
 
 // params, state, url

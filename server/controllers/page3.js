@@ -4,9 +4,10 @@
  */
 
 exports.index = (req, res) => {
-  res.render('help', {
-    title: 'Contact / Help',
+  res.render('page3', {
+    title: 'Page 3 Long Title',
     user: req.user,
+    server: true,
     global: {
       authenticated: req.user,
       isAdmin: req.user.isAdmin(),

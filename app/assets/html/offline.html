@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#4DA5F4">
   <meta name="csrf-token">
   <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
-  <title>SMASH - offline</title>
+  <title>Isomorphic</title>
   <link rel="stylesheet" href="/css/app.css">
   <meta name="theme-color" content="#006df0">
   <link href="https://fonts.googleapis.com/css?family=PT+Mono|PT+Sans:400,700" rel="stylesheet">
@@ -16,6 +16,7 @@
   <!-- replaces the 'no-js' class with 'js'-->
   <script>
     (function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);
+
   </script>
 </head>
 
@@ -23,7 +24,7 @@
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
-        <div class="navbar-brand"><span>SMASH</span></div>
+        <div class="navbar-brand"><span>ISO APP</span></div>
       </div>
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav"></ul>
@@ -31,41 +32,26 @@
       </div>
     </div>
   </nav>
-  <section class="main" id="mainContent">
-    <div class="col-md-6 col-md-push-6 login-well">
-      <div class="well">
-        <div style="padding:5px">
-          <h3 class="hidden-xs hidden-sm">Sign in</h3>
-          <div class="alert alert-danger">
-            <p>
-              <strong>Oops!!!!</strong> It looks like you're offline... can you access any other websites? If you can then maybe
-              it's me and not you who is offline so please drop an email to the support team (support@smash.srft.nhs.uk) and
-              they'll try and get me working again soon!
-            </p>
-          </div>
+  <section class="main" id="mainContent"><div class="col-md-6 col-md-push-6 login-well">
+    <div class="well">
+      <div style="padding:5px">
+        <h3 class="hidden-xs hidden-sm">Sign in</h3>
+        <div class="alert alert-danger">
+          <p>
+            <strong>Oops!!!!</strong> It looks like you're offline... can you access any other websites? If you can then maybe
+            it's me and not you who is offline so please drop an email to the support team (its@trap...) and
+            they'll try and get me working again soon!
+          </p>
         </div>
       </div>
     </div>
+  </div>
     <div class="col-lg-offset-1 col-lg-5 col-md-6 col-md-pull-6" style="margin-top:50px;">
-      <h1>Medication safety dashboard</h1>
-      <p>Welcome to the primary care medication safety dashboard!</p>
-      <p>This system examines electronic health records and identifies patients who may be potentially at risk due to the medications
-        that they are receiving. These lists of patients are then displayed to support health professionals when making decisions
-        about patient care which could lead to improvements in medication safety in primary care.</p>
-      <p>The system is currently being evaluated in Salford Clinical Commissioning Group (CCG), with general practices receiving
-        pharmacist support to help address medication safety challenges highlighted by the dashboard. User feedback will
-        be incorporated into a second version of the dashboard for wider rollout across Greater Manchester.
-      </p>
-      <p>Please sign in using the form to the right to access the dashboard.<span class="glyphicon glyphicon-hand-right" aria-hidden="true"
-          style="font-size: 1.5em;"></span></p>
-      <p>If you would like more information, please contact <a href="mailto:support@smash.srft.nhs.uk">support@smash.srft.nhs.uk</a>.</p>
-      <p><small>This dashboard has been developed by the <a href="http://www.population-health.manchester.ac.uk/primary-care-patient-safety/" target="_blank" rel="noopener">NIHR Greater Manchester Primary Care Patient Safety Translational Research Centre (GM PSTRC)</a>.</small></p>
-      <p><small><small>The views expressed are those of the authors and not necessarily those of the NHS, the NIHR or the Department of Health.</small></small>
-      </p>
-      <div class="row">
-        <div class="col-sm-4 col-xs-6"><img src="/img/logo_uom.png" style="max-width: 100%; max-height: 100%;"></div>
-        <div class="col-sm-4 col-xs-6"><img src="/img/logo_nihr.png" style="max-width: 100%; max-height: 100%;"></div>
-      </div>
+      <h1>Isomorphic vanilla brunch web app</h1>
+      <p>Welcome to the isomorphic vanilla brunch web app!</p>
+      <p>An attempt to write an isomorphic web app without a framework like Angular, React, Riot, Vue etc..</p>
+      <p>More information can be found on the <a href="https://www.github.com/rw251/isomorphic-vanilla" target="_blank">github repo</a>.</p>
+      <p><small>This dashboard has been developed by Richard Williams</small></p>
     </div>
   </section>
   <script src="/js/libraries.js"></script>

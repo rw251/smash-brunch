@@ -13,7 +13,7 @@ const utils = require('./utils');
 
 exports.login = (req, res) => {
   if (req.user) return res.redirect('/');
-  return res.render('auth/login', { title: 'Login' });
+  return res.render('auth/login', { title: 'Login', server: true });
 };
 
 /**
@@ -80,6 +80,7 @@ exports.reset = (req, res, next) => {
       }
       return res.render('auth/reset', {
         title: 'Password Reset',
+        server: true,
       });
     });
 };
@@ -133,7 +134,7 @@ exports.postReset = (req, res, next) => {
     const mailOptions = {
       to: user.email,
       from: config.email.fromPasswordReset,
-      subject: 'Your SMASH password has been changed',
+      subject: 'Your ISOMORPHIC password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n\n
       If you have not just changed your password then please contact the support team at ${config.email.support}.\n`,
     };
@@ -160,7 +161,7 @@ exports.postReset = (req, res, next) => {
 
 exports.forgot = (req, res) => {
   if (req.isAuthenticated()) return res.redirect('/');
-  return res.render('auth/forgot', { title: 'Forgot Password' });
+  return res.render('auth/forgot', { title: 'Forgot Password', server: true });
 };
 
 /**
@@ -211,7 +212,7 @@ exports.postForgot = (req, res, next) => {
     const mailOptions = {
       to: user.email,
       from: user.email.fromPasswordResetLink,
-      subject: 'Reset your SMASH password',
+      subject: 'Reset your ISOMORPHIC password',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
         https://${req.headers.host}/reset/${token}\n\n

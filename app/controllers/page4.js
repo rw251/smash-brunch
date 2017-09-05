@@ -1,4 +1,4 @@
-const helpTemplate = require('../../shared/templates/help.jade');
+const helpTemplate = require('../../shared/templates/page4.jade');
 const defaultController = require('./default');
 
 // params, state, url

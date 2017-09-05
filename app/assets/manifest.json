@@ -1,6 +1,6 @@
 {
-  "short_name": "SMASH",
-  "name": "SMASH - the medication safety dashboard",
+  "short_name": "Isomorphic",
+  "name": "Isomorphic vanilla webapp",
   "icons": [
       {
           "src": "/img/icon-192x192.png",

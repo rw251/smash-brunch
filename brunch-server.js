@@ -85,6 +85,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     if (req.accepts('html')) {
       res.render('404', { url: req.url,
         user: req.user,
+        server: true,
         global: {
           authenticated: req.user,
           isAdmin: req.user.isAdmin(),

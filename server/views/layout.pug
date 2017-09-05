@@ -7,7 +7,7 @@ html.no-js(lang='en')
     meta(name='theme-color' content='#4DA5F4')
     meta(name='csrf-token', content=_csrf)
     link(rel="icon",href="/favicon.ico?v=2",type="image/x-icon")
-    title SMASH
+    title Isomorphic
     link(rel="stylesheet" href="/css/app.css")
 
     link(rel="apple-touch-icon", sizes="180x180", href="/img/icon-180x180.png")
@@ -33,22 +33,22 @@ html.no-js(lang='en')
               span.icon-bar
               span.icon-bar
           .navbar-brand
-            span SMASH
+            span ISO APP
         .collapse.navbar-collapse
           ul.nav.navbar-nav
             if global.authenticated
-              li(class=(title == 'Single Practice') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
-                a.showWhenSmall(href='/') My Practice
-                a.hideWhenSmall(href='/') Single Practice
-              li(class=(title == 'All Practices') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
-                a.showWhenSmall(href='/ccg') All
-                a.hideWhenSmall(href='/ccg') All Practices
-              li(class=(title == 'Indicator Evidence Summaries') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
-                a.showWhenSmall(href='/evidence') Evidence
-                a.hideWhenSmall(href='/evidence') Indicator Evidence Summaries
-              li(class=(title == 'Contact / Help') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
-                a.showWhenSmall(href='/help') Help
-                a.hideWhenSmall(href='/help') Contact / Help
+              li(class=(title == 'Page 1 Long Title') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/') Page 1
+                a.hideWhenSmall(href='/') Page 1 Long Title
+              li(class=(title == 'Page 2 Long Title') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/page2') Page 2
+                a.hideWhenSmall(href='/page2') Page 2 Long Title
+              li(class=(title == 'Page 3 Long Title') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/page3') Page 3
+                a.hideWhenSmall(href='/page3') Page 3 Long Title
+              li(class=(title == 'Page 4 Long Title') ? 'active' : undefined, data-toggle="collapse", data-target=".navbar-collapse.in")
+                a.showWhenSmall(href='/page4') Page 4
+                a.hideWhenSmall(href='/page4') Page 4 Long Title
           ul.nav.navbar-nav.navbar-right
             if global.authenticated
               li.dropdown(class=(title == 'Account Management') ? 'active' : undefined)
@@ -73,6 +73,10 @@ html.no-js(lang='en')
 
     section#mainContent.main
       block content
+
+    if(global && global.user)
+      p= `The currently logged in user is ${global.user.name}`
+    p= `LAYOUT rendered on the ${server ? 'SERVER' : 'CLIENT'}`
 
     script(src='/js/libraries.js')
     script(src='/js/app.js')
