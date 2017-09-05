@@ -4,12 +4,6 @@ var CACHE = 'cache-update-and-refresh-' + VERSION;
 
 var cachedLocalItems = [
   '/css/app.css',
-  '/img/down-green.png',
-  '/img/up-green.png',
-  '/img/down-red.png',
-  '/img/up-red.png',
-  '/img/logo_nihr.png',
-  '/img/logo_uom.png',
   '/fonts/glyphicons-halflings-regular.eot',
   '/fonts/glyphicons-halflings-regular.svg',
   '/fonts/glyphicons-halflings-regular.ttf',
