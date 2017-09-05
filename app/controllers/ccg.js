@@ -3,11 +3,5 @@ const defaultController = require('./default');
 
 // params, state, url
 exports.index = () => {
-
-  if (global.server) {
-    global.server = false;
-    // wireUpIndex();
-  } else {
-    defaultController(ccgTemplate);
-  }
+  defaultController(ccgTemplate);
 };
