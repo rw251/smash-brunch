@@ -582,3 +582,9 @@ $navbarToggle:600;
     padding-right: 0;
   }
 }
+
+.inline-select.form-control,
+.inline-select.form-control.bootstrap-select {
+  width:auto;
+  display:inline-block;
+}

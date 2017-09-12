@@ -22,6 +22,8 @@ module.exports = {
       order: {
         before: [
           'vendor/styles/bootstrap.scss',
+          'vendor/styles/variables.scss',
+          'vendor/styles/bootstrap-select.scss',
         ],
       },
     },

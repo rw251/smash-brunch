@@ -1,5 +1,4 @@
 const express = require('express');
-const passportConfig = require('../passport/index');
 const homeController = require('../controllers/home');
 const ccgController = require('../controllers/ccg');
 const indicatorsController = require('../controllers/indicators');
@@ -10,6 +9,8 @@ const apiController = require('../controllers/api');
 const routes = require('../../shared/routes');
 const ctrl = require('../../shared/controllers');
 const validateControllers = require('../../shared/validate');
+
+require('../passport/index');
 
 const controllers = {};
 controllers[ctrl.home] = homeController;
@@ -23,7 +24,7 @@ validateControllers(controllers);
 
 const router = express.Router();
 
-const isAuthenticated = function (req, res, next) {
+const isAuthenticated = (req, res, next) => {
   // if user is authenticated in the session, call the next() to call the next request handler
   // Passport adds this method to request object. A middleware is allowed to add properties to
   // request and response objects
@@ -32,7 +33,7 @@ const isAuthenticated = function (req, res, next) {
   req.session.redirect_to = req.path; // remember the page they tried to load
   return res.redirect('/login');
 };
-const isAdmin = function (req, res, next) {
+const isAdmin = (req, res, next) => {
   if (req.user.roles.indexOf('admin') > -1) return next();
   return res.redirect('/login');
 };
@@ -56,7 +57,9 @@ module.exports = function routeIndex() {
   // api methods for returning JSON data to populate some views
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
-  router.get('/api/practices', isAuthenticated, apiController.list);
+  router.get('/api/practices', isAuthenticated, apiController.listPractices);
+  router.get('/api/dates', isAuthenticated, apiController.listDates);
+  router.get('/api/datesForDisplay', isAuthenticated, apiController.listDatesForDisplay);
 
   router.get('/logout', authController.logout);
 

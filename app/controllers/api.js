@@ -15,3 +15,18 @@ exports.practices = (callback) => {
       },
     });
 };
+
+exports.datesForDisplay = (callback) => {
+  if (global.datesForDisplay) return callback(null, global.datesForDisplay);
+  return $
+    .ajax({
+      url: '/api/datesForDisplay',
+      success(datesForDisplay) {
+        global.datesForDisplay = datesForDisplay;
+        return callback(null, datesForDisplay);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};
