@@ -44,7 +44,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     app.use(forceSsl);
   }
 
-  app.use(favicon(path.join(__dirname, PATH, 'favicon.ico')));
+  // app.use(favicon(path.join(__dirname, PATH, 'favicon.ico')));
   app.use(logger());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
