@@ -33,7 +33,7 @@ exports.postLogin = (req, res, next) => {
     return res.redirect('/login');
   }
 
-  return passport.authenticate('local', (err, user, info) => {
+  return passport.authenticate('auth0', (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('danger', info && info.msg ? info.msg : 'Unknown error occurred');

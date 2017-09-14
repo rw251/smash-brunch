@@ -31,6 +31,7 @@ const ENV = {
   EMAIL_PASSWORD_RESET: process.env.EMAIL_PASSWORD_RESET,
 
   EMAIL_SUPPORT: mustExist('SUPPORT_EMAIL'),
+
 };
 
 module.exports = {
@@ -38,6 +39,12 @@ module.exports = {
   // user auth
   passport: {
     secret: ENV.PASSPORT_SECRET,
+  },
+  auth0: {
+    domain: process.env.AUTH0_DOMAIN,
+    clientId: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    callbackUrl: process.env.AUTH0_CALLBACK_URL,
   },
   server: {
     port: ENV.SERVER_PORT,
