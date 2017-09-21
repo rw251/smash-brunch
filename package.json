@@ -46,6 +46,7 @@
     "compression": "^1.6.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
     "debug": "^2.6.6",
     "digest-brunch": "^1.5.1",
     "dotenv": "^4.0.0",

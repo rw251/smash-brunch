@@ -7,6 +7,7 @@ const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const apiController = require('../controllers/api');
 const routes = require('../../shared/routes');
+const cors = require('cors');
 const ctrl = require('../../shared/controllers');
 const validateControllers = require('../../shared/validate');
 
@@ -54,7 +55,7 @@ module.exports = function routeIndex() {
     router[route.type](route.url, ...middleware);
   });
 
-  router.get('/cookie/:cookie', (req, res) => {
+  router.get('/cookie/:cookie', cors(), (req, res) => {
     res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
   });
 
