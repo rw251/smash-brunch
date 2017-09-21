@@ -25,7 +25,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
 
   mongoose.set('debug', DEBUG);
   mongoose.Promise = global.Promise;
-  mongoose.connect(config.mongoUrl);
+  mongoose.connect(config.mongoUrl, { useMongoClient: true });
   mongoose.connection.on('error', (err) => {
     pino.error(err);
     pino.info('MongoDB connection error. Please make sure MongoDB is running.');
@@ -49,7 +49,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
   app.use(logger());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
-  app.user(cookieParser());
+  app.use(cookieParser());
   app.use(expressValidator());
   app.use(expressSession({
     resave: false,

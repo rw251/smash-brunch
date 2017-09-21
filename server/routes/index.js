@@ -9,8 +9,6 @@ const apiController = require('../controllers/api');
 const routes = require('../../shared/routes');
 const ctrl = require('../../shared/controllers');
 const validateControllers = require('../../shared/validate');
-const passport = require('passport');
-const config = require('../config');
 
 require('../passport/index');
 
@@ -54,25 +52,6 @@ module.exports = function routeIndex() {
 
     // set up the route
     router[route.type](route.url, ...middleware);
-  });
-
-// Perform the login
-  router.get('/login2', passport.authenticate('auth0', {
-    clientID: config.auth0.clientId,
-    domain: config.auth0.domain,
-    redirectUri: config.auth0.callbackUrl,
-    audience: `https://${config.auth0.domain}/userinfo`,
-    responseType: 'code',
-    scope: 'openid profile email',
-  }), (req, res) => {
-    res.redirect('/');
-  });
-
-// // Perform the final stage of authentication and redirect to '/user'
-  router.get('/callback', passport.authenticate('auth0', {
-    failureRedirect: '/',
-  }), (req, res) => {
-    res.redirect(req.session.returnTo || '/');
   });
 
   router.get('/cookie/:cookie', (req, res) => {
