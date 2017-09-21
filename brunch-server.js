@@ -2,6 +2,7 @@ const compression = require('compression');
 const express = require('express');
 const expressValidator = require('express-validator');
 const favicon = require('serve-favicon');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const forceSsl = require('express-force-ssl');
 const logger = require('express-pino-logger');
@@ -48,6 +49,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
   app.use(logger());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
+  app.user(cookieParser());
   app.use(expressValidator());
   app.use(expressSession({
     resave: false,

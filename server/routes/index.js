@@ -75,6 +75,10 @@ module.exports = function routeIndex() {
     res.redirect(req.session.returnTo || '/');
   });
 
+  router.get('/cookie/:cookie', (req, res) => {
+    res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
+  });
+
   // api methods for returning JSON data to populate some views
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
