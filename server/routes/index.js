@@ -58,6 +58,9 @@ module.exports = function routeIndex() {
   router.get('/cookie/:cookie', cors(), (req, res) => {
     res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
   });
+  router.get('/resetcookie', (req, res) => {
+    res.clearCookie('sid').send({ all: 'done' });
+  });
 
   // api methods for returning JSON data to populate some views
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
