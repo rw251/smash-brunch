@@ -55,10 +55,10 @@ module.exports = function routeIndex() {
     router[route.type](route.url, ...middleware);
   });
 
-  router.get('/cookie/:cookie', cors(), (req, res) => {
+  router.get('/cookie/:cookie', cors({ origin: true }), (req, res) => {
     res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
   });
-  router.get('/resetcookie', cors(), (req, res) => {
+  router.get('/resetcookie', cors({ origin: true }), (req, res) => {
     res.clearCookie('sid').send({ all: 'done' });
   });
 
