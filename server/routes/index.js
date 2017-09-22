@@ -58,7 +58,7 @@ module.exports = function routeIndex() {
   router.get('/cookie/:cookie', cors(), (req, res) => {
     res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
   });
-  router.get('/resetcookie', (req, res) => {
+  router.get('/resetcookie', cors(), (req, res) => {
     res.clearCookie('sid').send({ all: 'done' });
   });
 
