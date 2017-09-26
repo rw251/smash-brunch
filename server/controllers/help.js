@@ -1,17 +1,12 @@
+const utils = require('./utils');
 /**
  * GET /
  * Home page.
  */
 
 exports.index = (req, res) => {
-  res.render('help', {
-    title: 'Contact / Help',
-    user: req.user,
-    global: {
-      authenticated: req.user,
-      isAdmin: req.user.isAdmin(),
-      user: req.user,
-    },
-  });
+  const data = utils.getGlobalData(req.user);
+  data.title = 'Contact / Help';
+  res.render('help', data);
 };
 

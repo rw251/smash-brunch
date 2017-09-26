@@ -7,7 +7,7 @@ exports.index = (req, res, next) => {
     if (err) return next(err);
     return dateController.listForDisplay((errDate, dates) => {
       if (errDate) return next(errDate);
-      const data = utils.getUserObject(req.user);
+      const data = utils.getGlobalData(req.user);
       data.title = 'Single Practice';
       data.practices = practices;
       data.dates = dates;

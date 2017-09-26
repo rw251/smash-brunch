@@ -9,6 +9,7 @@ const apiController = require('../controllers/api');
 const routes = require('../../shared/routes');
 const cors = require('cors');
 const ctrl = require('../../shared/controllers');
+const passport = require('passport');
 const validateControllers = require('../../shared/validate');
 
 require('../passport/index');
@@ -30,9 +31,19 @@ const isAuthenticated = (req, res, next) => {
   // Passport adds this method to request object. A middleware is allowed to add properties to
   // request and response objects
   if (req.isAuthenticated()) { return next(); }
-    // if the user is not authenticated then redirect him to the login page
+
   req.session.redirect_to = req.path; // remember the page they tried to load
-  return res.redirect('/login');
+
+  passport.authenticate('custom', (err, user) => {
+    if (err) { return next(err); }
+    if (!user) {
+      return res.redirect('/login');
+    }
+    return req.logIn(user, (errLogin) => {
+      if (errLogin) { return next(errLogin); }
+      return next();
+    });
+  })(req, res, next);
 };
 const isAdmin = (req, res, next) => {
   if (req.user.roles.indexOf('admin') > -1) return next();

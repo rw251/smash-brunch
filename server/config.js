@@ -36,6 +36,7 @@ const ENV = {
 
 module.exports = {
   mongoUrl: ENV.MONGO_URL,
+  mongoSessionUrl: mustExist('MONGO_SESSION_URL'),
   // user auth
   passport: {
     secret: ENV.PASSPORT_SECRET,
@@ -52,4 +53,7 @@ module.exports = {
     support: ENV.EMAIL_SUPPORT,
   },
   mode: process.env.MODE || 'development',
+  actionURL: mustExist('ACTION_URL'),
+  ourURL: mustExist('OUR_URL'),
 };
+

@@ -31,7 +31,7 @@ exports.listJSON = (req, res, next) => {
 exports.list = (req, res, next) => {
   listOfUsers((err, users) => {
     if (err) { return next(err); }
-    const userObject = utils.getUserObject(req.user);
+    const userObject = utils.getGlobalData(req.user);
     userObject.title = 'Users';
     userObject.users = users;
     return res.render('account/listUsers', userObject);
@@ -46,13 +46,13 @@ exports.getJSON = (req, res, next) => {
 };
 
 exports.add = (req, res) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   userObject.title = 'Users';
   res.render('account/addUser', userObject);
 };
 
 exports.postAdd = (req, res) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   User.findOne({
     email: req.body.email,
   }, (err, user) => {
@@ -93,7 +93,7 @@ exports.postAdd = (req, res) => {
 };
 
 exports.edit = (req, res, next) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   userObject.title = 'Users';
   getUser(req.params.email, (err, user) => {
     if (err) { return next(err); }
@@ -103,7 +103,7 @@ exports.edit = (req, res, next) => {
 };
 
 exports.postEdit = (req, res) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   const email = req.params.email;
   User.findOne({ email }, (err, user) => {
     // In case of any error, return using the done method
@@ -171,7 +171,7 @@ exports.postEdit = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   userObject.email = req.params.email;
   res.render('account/deleteUser', userObject);
 };

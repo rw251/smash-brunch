@@ -33,7 +33,7 @@ exports.postLogin = (req, res, next) => {
     return res.redirect('/login');
   }
 
-  return passport.authenticate('local', (err, user, info) => {
+  return passport.authenticate('custom', (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('danger', info && info.msg ? info.msg : 'Unknown error occurred');
@@ -240,7 +240,7 @@ exports.postForgot = (req, res, next) => {
  */
 
 exports.changePassword = (req, res) => {
-  const userObject = utils.getUserObject(req.user);
+  const userObject = utils.getGlobalData(req.user);
   userObject.title = 'Change Password';
   res.render('auth/changePassword', userObject);
 };

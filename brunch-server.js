@@ -89,7 +89,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
         user: req.user,
         global: {
           authenticated: req.user,
-          isAdmin: req.user.isAdmin(),
+          isAdmin: req.user && req.user.roles && req.user.roles.indexOf('admin') > -1,
           user: req.user,
         } });
       return;
