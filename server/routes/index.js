@@ -73,8 +73,12 @@ module.exports = function routeIndex() {
 
   router.get('/auth/google', passport.authenticate('google'));
   router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    // Successful authentication, redirect home.
-    res.redirect('/');
+    // Successful authentication, redirect to original url or home.
+    let red = req.session.redirect_to || '/practice';
+    if (req.body.hash) red += `#${req.body.hash}`;
+    req.session.redirect_to = null;
+    delete req.session.redirect_to;
+    return res.redirect(red);
   });
 
   router.get('/logout', authController.logout);

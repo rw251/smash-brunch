@@ -31,29 +31,6 @@ passport.deserializeUser((sessionUser, done) => {
 // }));
 
 /*
- * Sign in using session id cookie.
- */
-// passport.use(new CustomStrategy((req, callback) => {
-//   if (req.cookies && req.cookies.sid) {
-//     return MongoClient.connect(config.mongoSessionUrl, (err, db) => {
-//       if (err) return callback(err);
-//       console.log('Connected correctly to server');
-//       return db.collection('sessions').findOne({ _id: req.cookies.sid }, (errFind, session) => {
-//         console.log(session);
-//         db.close();
-//         if (errFind) return callback(errFind);
-//         try {
-//           return callback(null, session.session.passport.user);
-//         } catch (e) {
-//           return callback();
-//         }
-//       });
-//     });
-//   }
-//   return callback();
-// }));
-
-/*
   Use oauth2 - google for now but will change to own provider
 */
 passport.use(new OAuth2GoogleStrategy({
