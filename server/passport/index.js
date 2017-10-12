@@ -36,7 +36,7 @@ passport.deserializeUser((sessionUser, done) => {
 passport.use(new OAuth2GoogleStrategy({
   clientID: config.oauth2.clientId,
   clientSecret: config.oauth2.clientSecret,
-  callbackURL: 'http://localhost:3333/auth/google/callback',
+  callbackURL: `${config.ourURL}/auth/google/callback`,
   userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
   scope: ['email'],
 }, (accessToken, refreshToken, profile, cb) => {

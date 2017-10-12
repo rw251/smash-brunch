@@ -53,7 +53,6 @@ module.exports = {
     support: ENV.EMAIL_SUPPORT,
   },
   mode: process.env.MODE || 'development',
-  actionURL: mustExist('ACTION_URL'),
   ourURL: mustExist('OUR_URL'),
   oauth2: {
     clientId: mustExist('OAUTH2_CLIENT_ID'),
