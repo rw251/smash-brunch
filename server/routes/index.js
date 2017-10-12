@@ -34,16 +34,7 @@ const isAuthenticated = (req, res, next) => {
 
   req.session.redirect_to = req.path; // remember the page they tried to load
 
-  passport.authenticate('custom', (err, user) => {
-    if (err) { return next(err); }
-    if (!user) {
-      return res.redirect('/login');
-    }
-    return req.logIn(user, (errLogin) => {
-      if (errLogin) { return next(errLogin); }
-      return next();
-    });
-  })(req, res, next);
+  return res.redirect('/login');
 };
 const isAdmin = (req, res, next) => {
   if (req.user.roles.indexOf('admin') > -1) return next();
@@ -79,6 +70,12 @@ module.exports = function routeIndex() {
   router.get('/api/practices', isAuthenticated, apiController.listPractices);
   router.get('/api/dates', isAuthenticated, apiController.listDates);
   router.get('/api/datesForDisplay', isAuthenticated, apiController.listDatesForDisplay);
+
+  router.get('/auth/google', passport.authenticate('google'));
+  router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
   router.get('/logout', authController.logout);
 

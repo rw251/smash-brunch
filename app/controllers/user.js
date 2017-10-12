@@ -2,6 +2,8 @@ const userListTemplate = require('../../shared/templates/account/listUsers.jade'
 const userAddTemplate = require('../../shared/templates/account/addUser.jade');
 const userEditTemplate = require('../../shared/templates/account/editUser.jade');
 const userDeleteTemplate = require('../../shared/templates/account/deleteUser.jade');
+const global = require('../scripts/global');
+const api = require('./api');
 const defaultController = require('./default');
 const $ = require('jquery');
 
@@ -18,22 +20,52 @@ exports.list = () => {
   });
 };
 
+const wireUpAdd = () => {
+  $('.selectpicker').selectpicker();
+};
+
 exports.add = () => {
-  defaultController(userAddTemplate);
+  if (global.server) {
+    delete global.server;
+    console.log('server load');
+    wireUpEdit();
+  } else {
+    console.log('client load');
+    api.practices((err, practices) => {     
+      if (err) {
+        defaultController(userAddTemplate, {message: { error: 'Somethings\'s gone wrong' } });
+      } else {
+        defaultController(userAddTemplate, {practices});
+        wireUpAdd();
+      }
+    });    
+  }
 };
 
 exports.delete = (ctx) => {
   defaultController(userDeleteTemplate, { email: ctx.params.email });
 };
 
+const wireUpEdit = () => {
+  $('.selectpicker').selectpicker();
+};
+
 exports.edit = (ctx) => {
-  $.ajax({
-    url: `/api/users/${ctx.params.email}`,
-    success(user) {
-      defaultController(userEditTemplate, { user });
-    },
-    error() {
-      defaultController(userEditTemplate, { user: { roles: [] }, message: { error: 'Somethings\'s gone wrong' } });
-    },
-  });
+  if (global.server) {
+    delete global.server;
+    console.log('server load');
+    wireUpEdit();
+  } else {
+    console.log('client load');
+    api.practices((err, practices) => {
+      api.user(ctx.params.email, (userError, user) => {
+        if (userError) {
+          defaultController(userEditTemplate, { user: { roles: [] }, message: { error: 'Somethings\'s gone wrong' } });
+        } else {
+          defaultController(userEditTemplate, { user, practices });
+          wireUpEdit();
+        }
+      });
+    });
+  }
 };

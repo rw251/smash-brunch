@@ -1,10 +1,6 @@
-/* eslint no-underscore-dangle: ["error", { "allow": ["_json"] }] */
-/* _json comes from github so have to make it an exception for eslint */
-
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const CustomStrategy = require('passport-custom').Strategy;
-const GitHubStrategy = require('passport-github').Strategy;
+const OAuth2Strategy = require('passport-oauth2').Strategy;
+const OAuth2GoogleStrategy = require('passport-google-oauth20').Strategy;
 const MongoClient = require('mongodb').MongoClient;
 const config = require('../config');
 
@@ -37,24 +33,54 @@ passport.deserializeUser((sessionUser, done) => {
 /*
  * Sign in using session id cookie.
  */
-passport.use(new CustomStrategy((req, callback) => {
-  if (req.cookies && req.cookies.sid) {
-    return MongoClient.connect(config.mongoSessionUrl, (err, db) => {
-      if (err) return callback(err);
-      console.log('Connected correctly to server');
-      return db.collection('sessions').findOne({ _id: req.cookies.sid }, (errFind, session) => {
-        console.log(session);
-        db.close();
-        if (errFind) return callback(errFind);
-        try {
-          return callback(null, session.session.passport.user);
-        } catch (e) {
-          return callback();
-        }
+// passport.use(new CustomStrategy((req, callback) => {
+//   if (req.cookies && req.cookies.sid) {
+//     return MongoClient.connect(config.mongoSessionUrl, (err, db) => {
+//       if (err) return callback(err);
+//       console.log('Connected correctly to server');
+//       return db.collection('sessions').findOne({ _id: req.cookies.sid }, (errFind, session) => {
+//         console.log(session);
+//         db.close();
+//         if (errFind) return callback(errFind);
+//         try {
+//           return callback(null, session.session.passport.user);
+//         } catch (e) {
+//           return callback();
+//         }
+//       });
+//     });
+//   }
+//   return callback();
+// }));
+
+/*
+  Use oauth2 - google for now but will change to own provider
+*/
+passport.use(new OAuth2GoogleStrategy({
+  clientID: config.oauth2.clientId,
+  clientSecret: config.oauth2.clientSecret,
+  callbackURL: 'http://localhost:3333/auth/google/callback',
+  userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
+  scope: ['email'],
+}, (accessToken, refreshToken, profile, cb) => {
+  // profile.emails [ { value:'email...', verified:true} ]
+  if (!profile.emails || profile.emails.length === 0) return cb(null, false, { msg: 'No email address associated with that account.' });
+  const validEmails = profile.emails.filter(v => v.verified).map(v => v.value);
+  if (validEmails.length === 0) return cb(null, false, { msg: 'No valid email address associated with that account.' });
+  return User.findOne({ email: { $in: validEmails } }, (err, user) => {
+    if (err) { return cb(err); }
+    if (!user) {
+      const newUser = new User({
+        email: validEmails[0],
+        name: profile.displayName,
       });
-    });
-  }
-  return callback();
+      newUser.save((errSave) => {
+        if (errSave) return cb(errSave);
+        return cb(null, newUser);
+      });
+    }
+    return cb(null, user);
+  });
 }));
 
 

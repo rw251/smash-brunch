@@ -1,12 +1,17 @@
-.container.container-small
+.container
   .btn-toolbar
     a.btn.btn-info(href='/users') Back to user list
-  form(action='/users/#{user.email}/edit', method='post')
+  form(action='/users/' + user.email + '/edit', method='post')
     label(for='name') Full name:
     input.form-control(type='text', name='name', placeholder='Full name', required='', autofocus='', value=user.name)
     label(for='email') Email:
     input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='', value=user.email)
     input.form-control(type='hidden', name='originalEmail', value=user.email)
+    .form-group
+      label(for='practices') Practice(s):
+      select.form-control.selectpicker(name='practices',data-live-search="true",multiple='',title='Select one or more GP practices')
+        each practice in practices
+          option(value=practice._id, selected=practice._id===+selectedId)= practice.short_name
     .form-group
       label.cr-styled
         input(name='isAdmin', type='checkbox', checked=user.roles.indexOf('admin')>-1 ? 'checked' : undefined)

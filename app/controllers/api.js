@@ -30,3 +30,15 @@ exports.datesForDisplay = (callback) => {
       },
     });
 };
+
+exports.user = (email, callback) => {
+  $.ajax({
+    url: `/api/users/${email}`,
+    success(user) {
+      callback(null, user);
+    },
+    error() {
+      callback(new Error('Can\'t find user.'));
+    },
+  });
+};

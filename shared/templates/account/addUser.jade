@@ -15,6 +15,11 @@
         i.fa.fa-key
       input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
     .form-group
+      label(for='practice') Practice(s):
+      select.form-control.selectpicker(name='practice',data-live-search="true",multiple='',title='Select one or more GP practices')
+        each practice in practices
+          option(value=practice._id)= practice.short_name
+    .form-group
       label.cr-styled
         input(name='isAdmin', type='checkbox')
         i.fa

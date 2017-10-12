@@ -33,7 +33,7 @@ exports.postLogin = (req, res, next) => {
     return res.redirect('/login');
   }
 
-  return passport.authenticate('custom', (err, user, info) => {
+  return passport.authenticate('google', (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('danger', info && info.msg ? info.msg : 'Unknown error occurred');

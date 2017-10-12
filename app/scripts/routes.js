@@ -63,6 +63,12 @@ const wireUpRoute = (route) => {
 getRoutesWithoutAuthentication.forEach(wireUpRoute);
 
 /*
+ *  The following need to hit the server.
+ */
+page('/logout', passThroughToServer);
+page('/auth/google', passThroughToServer);
+
+/*
  * everything else checks if logged in.
  */
 page('*', isLoggedIn);
@@ -71,13 +77,6 @@ page('*', isLoggedIn);
  * wire up all authenticated routes
  */
 getRoutesWithAuthentication.forEach(wireUpRoute);
-
-
-/*
- *  The following need to hit the server.
- */
-page('/logout', passThroughToServer);
-
 
 /*
  *  Everything else display the 404

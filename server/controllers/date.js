@@ -3,12 +3,7 @@ const DateModel = require('../models/Date'); // Can't call it Date
 const shortMonthLookup = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const longMonthLookup = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-const getAllDates = (callback) => {
-  DateModel.find().lean().exec((err, dates) => {
-    if (err) return callback(err);
-    return callback(null, dates);
-  });
-};
+const getAllDates = () => DateModel.find().lean().exec();
 
 const prepareDatesForDisplay = (dates) => {
   // We only want to keep today, yesterday, last week, last month (30 days),
@@ -34,17 +29,12 @@ const prepareDatesForDisplay = (dates) => {
   }
   // order descending
   preppedDates.sort((a, b) => b._id - a._id);
-  return preppedDates;
-};
 
-exports.list = (callback) => {
-  // lean true returns json objects i.e. smaller but can't then save/update them
-  getAllDates(callback);
-};
-
-exports.listForDisplay = (callback) => {
-  getAllDates((err, dates) => {
-    if (err) return callback(err);
-    return callback(null, prepareDatesForDisplay(dates));
+  return new Promise((resolve) => {
+    resolve(preppedDates);
   });
 };
+
+exports.list = getAllDates;
+
+exports.listForDisplay = () => getAllDates().then(prepareDatesForDisplay);

@@ -1,54 +1,49 @@
 const User = require('../models/User');
+const practiceController = require('./practice');
 const utils = require('./utils');
 
 /**
  * List all users
  */
 
-const listOfUsers = (callback) => {
-  // lean true returns json objects i.e. smaller but can't then save/update them
-  User.find().lean().exec((err, users) => {
-    if (err) { return callback(err); }
-    return callback(null, users);
-  });
-};
+// lean true returns json objects i.e. smaller but can't then save/update them
+const listAllUsers = () => User.find().lean().exec();
 
-const getUser = (email, callback) => {
-  // lean true returns json objects i.e. smaller but can't then save/update them
-  User.findOne({ email }).lean().exec((err, user) => {
-    if (err) { return callback(err); }
-    return callback(null, user);
-  });
-};
+// lean true returns json objects i.e. smaller but can't then save/update them
+const getUser = (email) => User.findOne({ email }).lean().exec();
 
 exports.listJSON = (req, res, next) => {
-  listOfUsers((err, users) => {
-    if (err) { return next(err); }
-    return res.send(users);
-  });
+  listAllUsers()
+    .then(users => res.send(users))
+    .catch(err => next(err));
 };
 
 exports.list = (req, res, next) => {
-  listOfUsers((err, users) => {
-    if (err) { return next(err); }
-    const userObject = utils.getGlobalData(req.user);
-    userObject.title = 'Users';
-    userObject.users = users;
-    return res.render('account/listUsers', userObject);
-  });
+  listAllUsers()
+    .then((users) => {
+      const data = utils.getGlobalData(req.user);
+      data.title = 'Users';
+      data.users = users;
+      return res.render('account/listUsers', data);
+    })
+    .catch(err => next(err));
 };
 
 exports.getJSON = (req, res, next) => {
-  getUser(req.params.email, (err, user) => {
-    if (err) { return next(err); }
-    return res.send(user);
-  });
+  getUser(req.params.email)
+    .then(user => res.send(user))
+    .catch(err => next(err));
 };
 
-exports.add = (req, res) => {
-  const userObject = utils.getGlobalData(req.user);
-  userObject.title = 'Users';
-  res.render('account/addUser', userObject);
+exports.add = async (req, res) => {
+  try {
+    const data = utils.getGlobalData(req.user);
+    data.practices = await practiceController.list();
+    data.title = 'Users';
+    return res.render('account/addUser', data);
+  } catch(err) {
+    return next(err);
+  } 
 };
 
 exports.postAdd = (req, res) => {
@@ -92,14 +87,16 @@ exports.postAdd = (req, res) => {
   });
 };
 
-exports.edit = (req, res, next) => {
-  const userObject = utils.getGlobalData(req.user);
-  userObject.title = 'Users';
-  getUser(req.params.email, (err, user) => {
-    if (err) { return next(err); }
-    userObject.user = user;
-    return res.render('account/editUser', userObject);
-  });
+exports.edit = async (req, res, next) => {
+  try {
+    const data = utils.getGlobalData(req.user);
+    data.practices = await practiceController.list();
+    data.user = await getUser(req.params.email);
+    data.title = 'Users';
+    return res.render('account/editUser', data);
+  } catch(err) {
+    return next(err);
+  }    
 };
 
 exports.postEdit = (req, res) => {
@@ -124,10 +121,14 @@ exports.postEdit = (req, res) => {
     if (req.body.isCCG) roles.push('ccg');
     const originalUser = user;
 
+    let practices = req.body.practices;
+    if(typeof practices === "string") practices = [practices];
+
     if (email === req.body.email) {
         // email not changing so update is fine
       user.name = req.body.name;
       user.roles = roles;
+      user.practices = practices;
         // save the user
       return user.save((saveErr) => {
         if (saveErr) {
@@ -156,6 +157,7 @@ exports.postEdit = (req, res) => {
       originalUser.email = req.body.email;
       originalUser.name = req.body.name;
       originalUser.roles = roles;
+      originalUser.practices = practices;
             // save the user
       return originalUser.save((saveErr) => {
         if (saveErr) {

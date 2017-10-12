@@ -1,43 +1,13 @@
-.col-md-6.col-md-push-6.login-well
-  .well
-    div(style='padding:5px')
-      // consume messages as jade reads them
-      - if (flash && flash.shift)
-        while message = flash.shift() 
-          .alert.animated.fadeIn(class='alert-' + message.type)
-            p= message.message
-      h3.hidden-xs.hidden-sm Sign in
-      form.signin(action='/login', method='post')
-        .row
-          .col-sm-12.col-xs-8
-            .form-group.clearfix
-              label.col-sm-2.control-label.hidden-xs(for='email') Email
-              .col-lg-8.col-sm-10
-                input#email.form-control(required='', type='email', name='email', placeholder='Email')
-          .col-xs-4.hidden-sm.hidden-md.hidden-lg
-            button.btn.btn-primary(type='submit') Sign in
-          .col-sm-12.col-xs-8
-            .form-group.clearfix
-              label.col-sm-2.control-label.hidden-xs(for='password') Password
-              .col-lg-8.col-sm-10
-                input#password.form-control(required='', type='password', name='password', placeholder='Password')
-          .col-xs-4.hidden-sm.hidden-md.hidden-lg
-            a(href='/forgot')  Forgot password?
-          .col-sm-12.hidden-xs
-            .form-group
-              .col-lg-8.col-md-offset-2.col-md-10
-                button.btn.btn-primary(type='submit') Sign in
-                a(href='/forgot')  Forgot password?
-        .row              
-          .col-lg-8.col-md-offset-2.col-md-10(style='padding-top:6px')
-            p
-              small
-                | If you would like to use the system but are not yet registered, please contact 
-                a(href='mailto:support@smash.srft.nhs.uk') support@smash.srft.nhs.uk
-                | .
-.col-lg-offset-1.col-lg-5.col-md-6.col-md-pull-6(style='margin-top:50px')
-  h1 Medication safety dashboard
-  p Welcome to the primary care medication safety dashboard!
+div(style='padding:5px')
+  // consume messages as jade reads them
+  - if (flash && flash.shift)
+    while message = flash.shift() 
+      .alert.animated.fadeIn(class='alert-' + message.type)
+        p= message.message
+  
+.col-lg-offset-2.col-lg-8.col-md-10.col-md-offset-1
+  h1 SMASH
+  p Welcome to SMASH, the medication safety dashboard!
   p
     | This system examines electronic health records and identifies patients who may be potentially at risk due to the
     | medications that they are receiving. These lists of patients are then displayed to support health professionals
@@ -48,8 +18,11 @@
     | feedback will be incorporated into a second version of the dashboard for wider rollout across Greater
     | Manchester.
   p
-    | Please sign in using the form to the right to access the dashboard.
-    span.glyphicon.glyphicon-hand-right(aria-hidden='true', style='font-size: 1.5em;')
+    | Please 
+    a.btn.btn-google.btn-social(href='/auth/google') 
+      i.fa.fa-google
+      | Sign in with Google
+    |  to access the dashboard.
   p
     | If you would like more information, please contact 
     a(href='mailto:support@smash.srft.nhs.uk') support@smash.srft.nhs.uk
@@ -57,8 +30,8 @@
   p
     small
       | This dashboard has been developed by the 
-      a(href='http://www.population-health.manchester.ac.uk/primary-care-patient-safety/', target='_blank', rel='noopener')
-        | NIHR Greater Manchester Primary Care Patient Safety Translational Research Centre (GM PSTRC)
+      a(href='http://www.patientsafety.manchester.ac.uk/', target='_blank', rel='noopener')
+        | NIHR Greater Manchester Patient Safety Translational Research Centre (GM PSTRC)
       | .
   p
     small
