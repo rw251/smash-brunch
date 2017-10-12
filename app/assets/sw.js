@@ -1,5 +1,5 @@
 // Change this to force update 
-var VERSION = 'v1.0.5';
+var VERSION = 'v1.1.1';
 var CACHE = 'cache-update-and-refresh-' + VERSION;
 
 var cachedLocalItems = [
