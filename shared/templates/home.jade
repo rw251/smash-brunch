@@ -3,8 +3,7 @@ form.form-inline
     if(practices.length === 1)
       h2= 'Report for ' + practices[0].short_name + ' '
     else
-      select#practiceList.form-control.inline-select.selectpicker(data-live-search="true",data-width="auto")
-        option(value="", disabled, selected=practices.filter(function(v){return v._id===+selectedId;}).length===0) -- Select a practice --
+      select#practiceList.form-control.inline-select.selectpicker(data-live-search="true",data-width="auto",title="Select a practice")
         each practice in practices
           option(value=practice._id, selected=practice._id===+selectedId)= practice.short_name
   .form-group.left-buffer.align-bottom

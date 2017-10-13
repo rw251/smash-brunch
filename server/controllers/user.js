@@ -10,7 +10,7 @@ const utils = require('./utils');
 const listAllUsers = () => User.find().lean().exec();
 
 // lean true returns json objects i.e. smaller but can't then save/update them
-const getUser = (email) => User.findOne({ email }).lean().exec();
+const getUser = email => User.findOne({ email }).lean().exec();
 
 exports.listJSON = (req, res, next) => {
   listAllUsers()
@@ -35,31 +35,38 @@ exports.getJSON = (req, res, next) => {
     .catch(err => next(err));
 };
 
-exports.add = async (req, res) => {
+exports.add = async (req, res, next) => {
   try {
     const data = utils.getGlobalData(req.user);
     data.practices = await practiceController.list();
     data.title = 'Users';
     return res.render('account/addUser', data);
-  } catch(err) {
+  } catch (err) {
     return next(err);
-  } 
+  }
 };
 
-exports.postAdd = (req, res) => {
-  const userObject = utils.getGlobalData(req.user);
+exports.postAdd = async (req, res, next) => {
+  let data;
+  try {
+    data = utils.getGlobalData(req.user);
+    data.practices = await practiceController.list();
+  } catch (err) {
+    return next(err);
+  }
+
   User.findOne({
     email: req.body.email,
   }, (err, user) => {
     if (err) {
       console.log(`Error in SignUp: ${err}`);
       req.flash('danger', 'Error while calling db to check if account already exists.');
-      return res.render('account/addUser', userObject);
+      return res.render('account/addUser', data);
     }
     if (user) {
       console.log(`User already exists with email: ${req.body.email}`);
       req.flash('danger', 'An account with that email address already exists.');
-      return res.render('account/addUser', userObject);
+      return res.render('account/addUser', data);
     }
     // if there is no user with that email
     // create the user
@@ -67,11 +74,15 @@ exports.postAdd = (req, res) => {
     if (req.body.isAdmin) roles.push('admin');
     if (req.body.isCCG) roles.push('ccg');
 
+    let practices = req.body.practices;
+    if (!practices) practices = [];
+    if (typeof practices === 'string') practices = [practices];
+
     const newUser = new User({
       email: req.body.email,
-      password: req.body.password,
       name: req.body.name,
       roles,
+      practices,
     });
 
     // save the user
@@ -79,7 +90,7 @@ exports.postAdd = (req, res) => {
       if (saveErr) {
         console.log(`Error in Saving user: ${saveErr}`);
         req.flash('danger', 'Error saving new user.');
-        return res.render('account/addUser', userObject);
+        return res.render('account/addUser', data);
       }
       console.log('User Registration succesful');
       return res.redirect('/users');
@@ -94,76 +105,78 @@ exports.edit = async (req, res, next) => {
     data.user = await getUser(req.params.email);
     data.title = 'Users';
     return res.render('account/editUser', data);
-  } catch(err) {
+  } catch (err) {
     return next(err);
-  }    
+  }
 };
 
 exports.postEdit = (req, res) => {
-  const userObject = utils.getGlobalData(req.user);
+  const data = utils.getGlobalData(req.user);
   const email = req.params.email;
   User.findOne({ email }, (err, user) => {
     // In case of any error, return using the done method
     if (err) {
       console.log(`Error in SignUp: ${err}`);
       req.flash('danger', 'Error while calling db to find user.');
-      return res.render('account/editUser', userObject);
+      return res.render('account/editUser', data);
     }
     // doesn't exist
     if (!user) {
       console.log(`Attempting to edit an unknown user: ${email}`);
       req.flash('danger', 'Attempting to edit an unknown user.');
-      return res.render('account/editUser', userObject);
+      return res.render('account/editUser', data);
     }
-    userObject.user = user;
+    data.user = user;
     const roles = ['authenticated'];
     if (req.body.isAdmin) roles.push('admin');
     if (req.body.isCCG) roles.push('ccg');
     const originalUser = user;
 
     let practices = req.body.practices;
-    if(typeof practices === "string") practices = [practices];
+    if (!practices) practices = [];
+    if (typeof practices === 'string') practices = [practices];
+
 
     if (email === req.body.email) {
-        // email not changing so update is fine
+      // email not changing so update is fine
       user.name = req.body.name;
       user.roles = roles;
       user.practices = practices;
-        // save the user
+      // save the user
       return user.save((saveErr) => {
         if (saveErr) {
           console.log(`Error in Saving user: ${saveErr}`);
           req.flash('danger', 'Error saving new user.');
-          return res.render('account/editUser', userObject);
+          return res.render('account/editUser', data);
         }
         return res.redirect('/users');
       });
     }
-        // check no existing user with that email
+    // check no existing user with that email
     return User.findOne({
       email: req.body.email,
     }, (findErr, existingUser) => {
       if (findErr) {
         console.log(`Error while checking if new email appears in system: ${err}`);
         req.flash('danger', 'Error while checking if new email appears in system.');
-        return res.render('account/editUser', userObject);
+        return res.render('account/editUser', data);
       }
-          // if there is already a user with the modified email address
+      // if there is already a user with the modified email address
       if (existingUser) {
         console.log(`Trying to change the email to one that already appears in the system: ${email}`);
         req.flash('danger', 'Trying to change the email to one that already appears in the system.');
-        return res.render('account/editUser', userObject);
+        return res.render('account/editUser', data);
       }
       originalUser.email = req.body.email;
       originalUser.name = req.body.name;
       originalUser.roles = roles;
       originalUser.practices = practices;
-            // save the user
+      // save the user
       return originalUser.save((saveErr) => {
         if (saveErr) {
           console.log(`Error in Saving user: ${saveErr}`);
           req.flash('danger', 'Error saving new user.');
-          return res.render('account/editUser', userObject);
+          return res.render('account/editUser', data);
         }
         console.log('User Registration succesful');
         return res.redirect('/users');
@@ -173,9 +186,9 @@ exports.postEdit = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-  const userObject = utils.getGlobalData(req.user);
-  userObject.email = req.params.email;
-  res.render('account/deleteUser', userObject);
+  const data = utils.getGlobalData(req.user);
+  data.email = req.params.email;
+  res.render('account/deleteUser', data);
 };
 
 exports.postDelete = (req, res) => {

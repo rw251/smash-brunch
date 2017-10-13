@@ -10,25 +10,21 @@
       span.input-group-addon
         i.fa.fa-envelope
       input.form-control(type='text', name='email', placeholder='Email address', required='', autofocus='')
-    .form-group.input-group
-      span.input-group-addon
-        i.fa.fa-key
-      input.form-control.nomargin(type='password', name='password', placeholder='Password', required='')
     .form-group
-      label(for='practice') Practice(s):
-      select.form-control.selectpicker(name='practice',data-live-search="true",multiple='',title='Select one or more GP practices')
+      label(for='practices') Practice(s):
+      select.form-control.selectpicker(name='practices',data-live-search="true",multiple='',title='Select one or more GP practices')
         each practice in practices
           option(value=practice._id)= practice.short_name
     .form-group
-      label.cr-styled
-        input(name='isAdmin', type='checkbox')
-        i.fa
-      |               Is Admin
+      .checkbox
+        label
+          input(name='isAdmin', type='checkbox')
+          | Is Admin
     .form-group
-      label.cr-styled
-        input(name='isCCG', type='checkbox')
-        i.fa
-      |               Is CCG
+      .checkbox
+        label
+          input(name='isCCG', type='checkbox')
+          | Is CCG user
     button.btn.btn-purple.btn-block.history(type='submit')
       | Create 
       span.fa.fa-arrow-circle-right

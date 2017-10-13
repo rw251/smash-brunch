@@ -11,17 +11,17 @@
       label(for='practices') Practice(s):
       select.form-control.selectpicker(name='practices',data-live-search="true",multiple='',title='Select one or more GP practices')
         each practice in practices
-          option(value=practice._id, selected=practice._id===+selectedId)= practice.short_name
+          option(value=practice._id, selected=user.practices.indexOf(''+practice._id)>-1)= practice.short_name
     .form-group
-      label.cr-styled
-        input(name='isAdmin', type='checkbox', checked=user.roles.indexOf('admin')>-1 ? 'checked' : undefined)
-        i.fa
-      |               Is Admin
+      .checkbox
+        label
+          input(name='isAdmin', type='checkbox', checked=user.roles.indexOf('admin')>-1 ? 'checked' : undefined)
+          | Is Admin
     .form-group
-      label.cr-styled
-        input(name='isCCG', type='checkbox', checked=user.roles.indexOf('ccg')>-1 ? 'checked' : undefined)
-        i.fa
-      |               Is CCG user     
+      .checkbox
+        label
+          input(name='isCCG', type='checkbox', checked=user.roles.indexOf('ccg')>-1 ? 'checked' : undefined)
+          | Is CCG user
     button.btn.btn-purple.btn-block.history(type='submit')
       | Update 
       span.fa.fa-arrow-circle-right
