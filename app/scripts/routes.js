@@ -35,6 +35,18 @@ const updateSelectedTab = (ctx, next) => {
   next();
 };
 
+const showLoadingShade = (ctx, next) => {
+  global.setShowLoading(true);
+  setTimeout(() => {
+    if (global.getShowLoading()) {
+      $('.loading-shade').show();
+    }
+  }, 500);
+  setTimeout(() => {
+    next();
+  }, 1);
+};
+
 const passThroughToServer = (ctx) => {
   if (ctx.handled) return;
   const current = location.pathname + location.search; // get requested url
@@ -51,6 +63,7 @@ const getRoutesWithAuthentication = routes.filter(route => route.needsAuth && ro
 const wireUpRoute = (route) => {
   const middleware = [];
   middleware.push(updateSelectedTab);
+  middleware.push(showLoadingShade);
   middleware.push(controllers[route.controller][route.method]);
 
   // for each route pass the array of middlewares spread out

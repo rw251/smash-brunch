@@ -45,7 +45,7 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     app.use(forceSsl);
   }
 
-  // app.use(favicon(path.join(__dirname, PATH, 'favicon.ico')));
+  app.use(favicon(path.join(__dirname, PATH, 'favicon.ico')));
   app.use(logger());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
@@ -83,25 +83,27 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     pino.info(req.headers);
     res.status(404);
 
-      // respond with html page
+    // respond with html page
     if (req.accepts('html')) {
-      res.render('404', { url: req.url,
+      res.render('404', {
+        url: req.url,
         user: req.user,
         global: {
           authenticated: req.user,
           isAdmin: req.user && req.user.roles && req.user.roles.indexOf('admin') > -1,
           user: req.user,
-        } });
+        },
+      });
       return;
     }
 
-      // respond with json
+    // respond with json
     if (req.accepts('json')) {
       res.send({ error: 'Not found' });
       return;
     }
 
-      // default to plain-text. send()
+    // default to plain-text. send()
     res.type('txt').send('Not found');
   });
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "brunch watch --server | pino",
+    "start": "node --version && brunch watch --server | pino",
     "build": "rm -rf dist/ && brunch build --production",
     "build:dev": "brunch build",
     "postinstall": "npm run build",

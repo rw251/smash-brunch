@@ -1,6 +1,7 @@
 // Change this to force update 
-var VERSION = 'v1.1.1';
+var VERSION = 'v1.1.2';
 var CACHE = 'cache-update-and-refresh-' + VERSION;
+var isDebug = false;
 
 var cachedLocalItems = [
   '/css/app.css',
@@ -26,9 +27,13 @@ var cachedRemoteItems = [
 var allCachedItems = cachedLocalItems.concat(cachedRemoteItems);
 allCachedItems.push('/html/offline.html');
 
+function logIt(message) {
+  if(isDebug) console.log(message);
+}
+
 self.addEventListener('install', function (e) {
   // Add the following assets on install
-  console.log('/sw.js -> Install to ' + CACHE);
+  logIt('/sw.js -> Install to ' + CACHE);
   e.waitUntil(caches.open(CACHE).then(function (cache) {
     cache.addAll(allCachedItems)
   }));
@@ -42,7 +47,7 @@ self.addEventListener('activate', function(event) {
     caches.keys().then(function(keyList) {
       return Promise.all(keyList.map(function(key) {
         if (cacheWhitelist.indexOf(key) === -1) {
-          console.log('Removing old cache: ' + key);
+          logIt('Removing old cache: ' + key);
           return caches.delete(key);
         }
       }));
@@ -51,7 +56,7 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function (evt) {
-  console.log('/sw.js -> Fetch ' +evt.request.url);
+  logIt('/sw.js -> Fetch ' +evt.request.url);
   // On fetch immediately return from cache if it is something
   // we currently cache
   if(cachedLocalItems.indexOf(evt.request.url.replace(/^https?:\/\/[^/]+\//,"/")) > -1 ||
@@ -63,14 +68,14 @@ self.addEventListener('fetch', function (evt) {
     evt.waitUntil(update(evt.request).then(refresh));
   } else {
     evt.respondWith(fetch(evt.request).catch(function () {
-      console.log("Error caught - /html/offline.html returned");
+      logIt("Error caught - /html/offline.html returned");
       return caches.match('/html/offline.html');
     }));
   }
 });
 
 function fromCache(request) {
-  console.log('/sw.js -> Fetch ' + request.url + ' from cache.');
+  logIt('/sw.js -> Fetch ' + request.url + ' from cache.');
   return caches.open(CACHE).then(function (cache) {
     return cache.match(request);
   });
@@ -90,8 +95,8 @@ function update(request) {
 
 function refresh(response) {
   if(!response) return;
-  console.log('/sw.js -> Response url ' + response.url);
-  console.log('/sw.js -> Response headers ' + Array.from(response.headers.keys()));
+  logIt('/sw.js -> Response url ' + response.url);
+  logIt('/sw.js -> Response headers ' + Array.from(response.headers.keys()));
   return self.clients.matchAll().then(function (clients) {
     clients.forEach(function (client) {
  

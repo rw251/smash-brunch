@@ -9,15 +9,21 @@ const $ = require('jquery');
 
 // params, state, url
 exports.list = () => {
-  $.ajax({
-    url: '/api/users',
-    success(users) {
-      defaultController(userListTemplate, { users });
-    },
-    error() {
-      defaultController(userListTemplate, { users: [], message: { error: 'Somethings\'s gone wrong' } });
-    },
-  });
+  global.serverOrClientLoad()
+    .onClient((ready) => {
+      $.ajax({
+        url: '/api/users',
+        success(users) {
+          defaultController(userListTemplate, { users });
+          ready();
+        },
+        error() {
+          defaultController(userListTemplate, { users: [], message: { error: 'Somethings\'s gone wrong' } });
+          ready();
+        },
+      });
+    })
+    .onServer();
 };
 
 const wireUpAdd = () => {
@@ -25,25 +31,31 @@ const wireUpAdd = () => {
 };
 
 exports.add = () => {
-  if (global.server) {
-    delete global.server;
-    console.log('server load');
-    wireUpEdit();
-  } else {
-    console.log('client load');
-    api.practices((err, practices) => {     
-      if (err) {
-        defaultController(userAddTemplate, {message: { error: 'Somethings\'s gone wrong' } });
-      } else {
-        defaultController(userAddTemplate, {practices});
-        wireUpAdd();
-      }
-    });    
-  }
+  global.serverOrClientLoad()
+    .onClient((ready) => {
+      api.practices((err, practices) => {
+        if (err) {
+          defaultController(userAddTemplate, { message: { error: 'Somethings\'s gone wrong' } });
+        } else {
+          defaultController(userAddTemplate, { practices });
+          wireUpAdd();
+        }
+        ready();
+      });
+    })
+    .onServer((ready) => {
+      wireUpAdd();
+      ready();
+    });
 };
 
 exports.delete = (ctx) => {
-  defaultController(userDeleteTemplate, { email: ctx.params.email });
+  global.serverOrClientLoad()
+    .onClient((ready) => {
+      defaultController(userDeleteTemplate, { email: ctx.params.email });
+      ready();
+    })
+    .onServer();
 };
 
 const wireUpEdit = () => {
@@ -51,21 +63,22 @@ const wireUpEdit = () => {
 };
 
 exports.edit = (ctx) => {
-  if (global.server) {
-    delete global.server;
-    console.log('server load');
-    wireUpEdit();
-  } else {
-    console.log('client load');
-    api.practices((err, practices) => {
-      api.user(ctx.params.email, (userError, user) => {
-        if (userError) {
-          defaultController(userEditTemplate, { user: { roles: [] }, message: { error: 'Somethings\'s gone wrong' } });
-        } else {
-          defaultController(userEditTemplate, { user, practices });
-          wireUpEdit();
-        }
+  global.serverOrClientLoad()
+    .onClient((ready) => {
+      api.practices((err, practices) => {
+        api.user(ctx.params.email, (userError, user) => {
+          if (userError) {
+            defaultController(userEditTemplate, { user: { roles: [] }, message: { error: 'Somethings\'s gone wrong' } });
+          } else {
+            defaultController(userEditTemplate, { user, practices });
+            wireUpEdit();
+          }
+          ready();
+        });
       });
+    })
+    .onServer((ready) => {
+      wireUpEdit();
+      ready();
     });
-  }
 };

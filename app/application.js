@@ -11,7 +11,7 @@ const App = {
       global.user = {};
       global.user.name = $('#userName').val();
       global.user.email = $('#userEmail').val();
-      global.server = true;
+      global.serverLoad();
 
       console.log(global);
 

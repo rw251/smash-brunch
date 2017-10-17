@@ -5,7 +5,7 @@ module.exports = (template, data) => {
   const templateData = data || {};
   if (global) {
     templateData.global = global;
-    global.server = false;
+    global.clientLoad();
   }
   const html = template(templateData);
   $('#mainContent').html(html);
