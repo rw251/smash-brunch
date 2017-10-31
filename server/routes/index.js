@@ -1,7 +1,7 @@
 const express = require('express');
 const homeController = require('../controllers/home');
 const ccgController = require('../controllers/ccg');
-const indicatorsController = require('../controllers/indicators');
+const evidenceSummaryController = require('../controllers/evidenceSummaries');
 const helpController = require('../controllers/help');
 const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
@@ -17,7 +17,7 @@ require('../passport/index');
 const controllers = {};
 controllers[ctrl.home] = homeController;
 controllers[ctrl.ccg] = ccgController;
-controllers[ctrl.evidence] = indicatorsController;
+controllers[ctrl.evidence] = evidenceSummaryController;
 controllers[ctrl.help] = helpController;
 controllers[ctrl.user] = userController;
 controllers[ctrl.auth] = authController;
@@ -68,6 +68,7 @@ module.exports = function routeIndex() {
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
   router.get('/api/practices', isAuthenticated, apiController.listPractices);
+  router.get('/api/indicators', isAuthenticated, apiController.listIndicators);
   router.get('/api/dates', isAuthenticated, apiController.listDates);
   router.get('/api/datesForDisplay', isAuthenticated, apiController.listDatesForDisplay);
 

@@ -6,6 +6,7 @@ module.exports = [
   { url: '/practice/:id/:dateId', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/ccg', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
   { url: '/evidence', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
+  { url: '/evidence/:id', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
   { url: '/help', type: 'get', needsAuth: true, controller: ctrl.help, method: 'index' },
 
   { url: '/users', type: 'get', needsAuth: true, needsAdmin: true, controller: ctrl.user, method: 'list' },

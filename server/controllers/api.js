@@ -1,5 +1,12 @@
 const practiceController = require('./practice');
+const indicatorController = require('./indicator');
 const dateController = require('./date');
+
+exports.listIndicators = (req, res, next) => {
+  indicatorController.list()
+    .then(indicators => res.send(indicators))
+    .catch(err => next(err));
+};
 
 exports.listPractices = (req, res, next) => {
   practiceController.list()
