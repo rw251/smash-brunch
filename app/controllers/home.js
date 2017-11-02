@@ -1,4 +1,5 @@
 const homeTemplate = require('../../shared/templates/home.jade');
+const homeContentTemplate = require('../../shared/templates/components/homeContent.jade');
 const api = require('./api');
 const global = require('../scripts/global');
 const defaultController = require('./default');
@@ -7,6 +8,13 @@ const page = require('page');
 
 const updateUrl = () => {
   page.show(`/practice/${global.selectedPracticeId ? `${global.selectedPracticeId}` : '0'}${global.selectedDateId ? `/${global.selectedDateId}` : ''}`, null, false);
+  if (global.selectedPracticeId && global.selectedDateId) {
+    api.practiceData(global.selectedPracticeId, global.selectedDateId, 2618, (err, data) => {
+      console.log(data);
+      const homeContentHtml = homeContentTemplate(data);
+      $('#content').html(homeContentHtml);
+    });
+  }
 };
 
 const updateGlobalValue = prop => (changeEvent) => {

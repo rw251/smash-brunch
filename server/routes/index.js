@@ -72,6 +72,9 @@ module.exports = function routeIndex() {
   router.get('/api/dates', isAuthenticated, apiController.listDates);
   router.get('/api/datesForDisplay', isAuthenticated, apiController.listDatesForDisplay);
 
+  router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getPracticeData);
+  router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId/export', isAuthenticated, apiController.exportPracticeData);
+
   router.get('/auth/google', passport.authenticate('google'));
   router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     // Successful authentication, redirect to original url or home.

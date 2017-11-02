@@ -57,3 +57,23 @@ exports.user = (email, callback) => {
     },
   });
 };
+
+exports.practiceData = (practiceId, dateId, comparisonDateId, callback) => {
+  if (!global.practiceData) global.practiceData = {};
+  if (!global.practiceData[practiceId]) global.practiceData[practiceId] = {};
+  if (!global.practiceData[practiceId][dateId]) global.practiceData[practiceId][dateId] = {};
+  if (global.practiceData[practiceId][dateId][comparisonDateId]) {
+    return callback(null, global.practiceData[practiceId][dateId][comparisonDateId]);
+  }
+  return $
+    .ajax({
+      url: `/api/practice/${practiceId}/summaryfordate/${dateId}/comparedWith/${comparisonDateId}`,
+      success(data) {
+        global.practiceData[practiceId][dateId][comparisonDateId] = data;
+        return callback(null, data);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};

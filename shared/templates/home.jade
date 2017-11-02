@@ -16,4 +16,4 @@ form.form-inline
     select#dateCompareList.inline-select(name="comparisonDate")
       each date in dates.slice(1)
         option(value=date._id, selected=date.value.indexOf('30 day')>-1)= date.value
-p= "The currently logged in user is " + global.user.name
+#content
