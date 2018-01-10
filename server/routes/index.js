@@ -6,7 +6,7 @@ const helpController = require('../controllers/help');
 const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const apiController = require('../controllers/api');
-const routes = require('../../shared/routes');
+const sharedRoutes = require('../../shared/routes');
 const cors = require('cors');
 const ctrl = require('../../shared/controllers');
 const passport = require('passport');
@@ -24,7 +24,7 @@ controllers[ctrl.auth] = authController;
 
 validateControllers(controllers);
 
-const router = express.Router();
+const { router, routes } = sharedRoutes(express.Router());
 
 const isAuthenticated = (req, res, next) => {
   // if user is authenticated in the session, call the next() to call the next request handler

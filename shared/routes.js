@@ -1,6 +1,8 @@
 const ctrl = require('./controllers');
+const home = require('./controllers/home');
+const ccg = require('./controllers/ccg');
 
-module.exports = [
+const routes = [
   { url: '/practice', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:id', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:id/:dateId', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
@@ -27,3 +29,26 @@ module.exports = [
   { url: '/password/change', type: 'get', needsAuth: true, controller: ctrl.auth, method: 'changePassword' },
   { url: '/password/change', type: 'post', needsAuth: true, controller: ctrl.auth, method: 'postChangePassword' },
 ];
+
+/**
+ *
+ * @param {Object} router Should expose methods such as get, post, delete etc
+ *   taking a url as first parameter then n middlewares.
+ * @returns {Object} Routing logic
+ */
+module.exports = (router) => {
+  // routes.forEach((route) => {
+  //   if (router[route.type]) {
+  //     // Only add the route if the type is supported. This means the client side routing doesn't
+  //     // worry about the posts
+  //     const middleware = [];
+  //     // middleware.push(utils.updateSelectedTab);
+  //     // middleware.push(utils.showLoadingShade);
+  //     middleware.push(controllers[route.controller][route.method]);
+  //     router[route.type](route.url, ...middleware);
+  //   }
+  // });
+  router.get('/practice', home.index);
+  router.get('/ccg', ccg.index);
+  return { router, routes };
+};

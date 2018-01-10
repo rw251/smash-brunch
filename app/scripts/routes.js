@@ -6,11 +6,10 @@ const helpController = require('../controllers/help');
 const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const notfound = require('../controllers/404');
-const global = require('../scripts/global');
 const ctrl = require('../../shared/controllers');
 const routes = require('../../shared/routes');
 const validateControllers = require('../../shared/validate');
-const $ = require('jquery');
+const utils = require('./utils');
 
 const controllers = {};
 controllers[ctrl.home] = homeController;
@@ -21,31 +20,6 @@ controllers[ctrl.user] = userController;
 controllers[ctrl.auth] = authController;
 
 validateControllers(controllers);
-
-// clearly this can be spoofed in the client, but all data
-// requests go via the api which authenticates server side.
-const isLoggedIn = (ctx, next) => {
-  if (global.isLoggedIn) next();
-  else page.redirect('/login');
-};
-
-const updateSelectedTab = (ctx, next) => {
-  $('.navbar-nav li').removeClass('active');
-  $(`.navbar-nav li a[href="/${ctx.pathname.split('/')[1]}"]`).parent().addClass('active');
-  next();
-};
-
-const showLoadingShade = (ctx, next) => {
-  global.setShowLoading(true);
-  setTimeout(() => {
-    if (global.getShowLoading()) {
-      $('.loading-shade').show();
-    }
-  }, 500);
-  setTimeout(() => {
-    next();
-  }, 1);
-};
 
 const passThroughToServer = (ctx) => {
   if (ctx.handled) return;
@@ -62,8 +36,8 @@ const getRoutesWithAuthentication = routes.filter(route => route.needsAuth && ro
 
 const wireUpRoute = (route) => {
   const middleware = [];
-  middleware.push(updateSelectedTab);
-  middleware.push(showLoadingShade);
+  middleware.push(utils.updateSelectedTab);
+  middleware.push(utils.showLoadingShade);
   middleware.push(controllers[route.controller][route.method]);
 
   // for each route pass the array of middlewares spread out
@@ -84,7 +58,7 @@ page('/auth/google', passThroughToServer);
 /*
  * everything else checks if logged in.
  */
-page('*', isLoggedIn);
+page('*', utils.isLoggedIn);
 
 /**
  * wire up all authenticated routes

@@ -1,7 +1,10 @@
 const $ = require('jquery');
 const main = require('./scripts/main');
 const global = require('./scripts/global');
-const routes = require('./scripts/routes');
+const page = require('page');
+const routes = require('../shared/routes');
+
+const router = { get: page };
 
 const App = {
   init: function init() {
@@ -15,7 +18,9 @@ const App = {
 
       console.log(global);
 
-      routes.start({ dispatch: true }); // dispatch - whether to perform initial dispatch
+      routes(router);
+
+      router.get.start({ dispatch: true }); // dispatch - whether to perform initial dispatch
       main.init();
     });
   },
