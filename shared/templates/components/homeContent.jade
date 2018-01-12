@@ -1,12 +1,97 @@
-.practice-summary-box
-  .practice-summary-title Practice size
-  .practice-summary-value= summaryData.practiceSize
-.practice-summary-box
-  .practice-summary-title Patients affected by at least one indicator
-  .practice-summary-value= summaryData.totalPatients
-.practice-summary-box
-  .practice-summary-title Patients affected by more than one indicator
-  .practice-summary-value= summaryData.multiple
-.practice-summary-box
-  .practice-summary-title All indicator average
-  .practice-summary-value= summaryData.allIndicatorAverage
+//- .practice-summary-box
+//-   .practice-summary-title Practice size
+//-   .practice-summary-value= summaryData.practiceSize
+//- .practice-summary-box
+//-   .practice-summary-title Patients affected by at least one indicator
+//-   .practice-summary-value= summaryData.totalPatients
+//- .practice-summary-box
+//-   .practice-summary-title Patients affected by more than one indicator
+//-   .practice-summary-value= summaryData.multiple
+//- .practice-summary-box
+//-   .practice-summary-title All indicator average
+//-   .practice-summary-value= summaryData.allIndicatorAverage
+
+if errorAlert
+  .top-buffer
+    alert(type='{{errorAlert.type}}')= errorAlert.msg
+else
+  .pull-right(ng-show='tabState[1]')
+    button.btn.btn-primary(type='button') Export
+  ul.nav.nav-tabs(role='tablist')
+    li.active(role='presentation')
+      a(href='#summary', aria-controls='summary', role='tab', data-toggle='tab') Practice summary
+    li(role='presentation')
+      a#tableTab(href='#table', aria-controls='table', role='tab', data-toggle='tab') Table
+    li(role='presentation')
+      a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab') Charts
+  // Tab panes
+  .tab-content
+    #summary.tab-pane.active(role='tabpanel')
+      table.top-buffer.table.table-bordered.table-narrow
+        tr
+          th(tooltip='Number of patients in the practice', tooltip-append-to-body='true', tooltip-placement='left') Practice size
+          td= summaryData.practiceSize
+        tr
+          th(tooltip='Number of patients flagged up by at least one of the indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by at least one indicator
+          td= summaryData.totalPatients
+        tr
+          th(tooltip='Number of patients flagged up by 2 or more indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by more than one indicator
+          td
+            a(href='/dashboard/practice/{{dataService.selectedPractice._id}}/patientsMultiple?dateId={{dataService.date._id}}')= summaryData.multiple
+        tr
+          th(tooltip='Out of all patients eligible for each indicator, this is the average proportion of affected patients', tooltip-append-to-body='true', tooltip-placement='left') All indicator average
+          td= summaryData.allIndicatorAverage
+    #table.tab-pane(role='tabpanel')
+      .clearfix
+      .top-buffer
+        table#indicatorTable.table.table-bordered.table-striped
+          thead
+            tr
+              th.pointer(tooltip='{{field.tooltip}}') Indicator
+              th.pointer(tooltip='{{field.tooltip}}') Affected patients
+              th.pointer(tooltip='{{field.tooltip}}') Eligible patients
+              th.pointer(tooltip='{{field.tooltip}}') % of eligible patients affected
+              th.pointer(tooltip='{{field.tooltip}}') CCG Avg (%)
+              th.pointer(tooltip='{{field.tooltip}}') Successful intervention
+              th.pointer(tooltip='{{field.tooltip}}') Action pending
+              th.pointer(tooltip='{{field.tooltip}}') New cases
+              th.pointer(tooltip='{{field.tooltip}}') Trend
+              th.pointer(tooltip='{{field.tooltip}}') Show on top
+          tbody
+            each indicator in tableData
+              tr.no-priority
+                td(tooltip='{{indicator.long_name}}', tooltip-append-to-body='true')= indicator.short_name
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith//type/num?tabId=0&chart=table')= indicator.num
+                td= indicator.denom
+                td= indicator.avg
+                td= indicator.ccg
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/resolved?tabId=0&chart=table')= indicator.resolved
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/existing?tabId=0&chart=table')= indicator.existing
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/new?tabId=0&chart=table')= indicator.new
+                td= indicator.trendValue
+                td
+                  input(type='checkbox', ng-checked='isChecked(indicator.id)', ng-click='handleCheckBoxClick(indicator.id)')
+    #charts.tab-pane(role='tabpanel')
+      .top-buffer
+        select#id_chart(data-width='auto', ng-model='dataService.selectedChart', ng-options='chart.name for chart in charts track by chart.name', ng-change='selectChart()')
+        .panel.panel-default(ng-if='dataService.selectedChart.id>0')
+          .panel-body
+            .inline-element.left-buffer.align-bottom.pull-right(ng-if='dataService.selectedChart.id <= 3 && dataService.selectedChart.id >= 2')
+              div
+                label End date:
+              div
+                select(ng-model='dataService.trendEndDate', ng-options="d.date | date:'d MMMM yyyy' for d in lookupService.currentDates | orderBy:'-date' | filter:trendEndDateFilter", ng-change='trendRangeChanged()')
+            .inline-element.align-bottom.pull-right(ng-if='dataService.selectedChart.id <= 3 && dataService.selectedChart.id >= 2')
+              div
+                label Start date:
+              div
+                select(ng-model='dataService.trendStartDate', ng-options="d.date | date:'d MMMM yyyy' for d in lookupService.currentDates | orderBy:'-date' | filter:trendStartDateFilter", ng-change='trendRangeChanged()')
+            .clearfix
+            #indicators-chart
+            #num-trend-chart
+            #avg-trend-chart
+

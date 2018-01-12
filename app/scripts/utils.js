@@ -10,8 +10,10 @@ exports.isLoggedIn = (ctx, next) => {
 };
 
 exports.updateSelectedTab = (ctx, next) => {
-  $('.navbar-nav li').removeClass('active');
-  $(`.navbar-nav li a[href="/${ctx.pathname.split('/')[1]}"]`).parent().addClass('active');
+  // $('.navbar-nav li').removeClass('active');
+  // $(`.navbar-nav li a[href="/${ctx.pathname.split('/')[1]}"]`).parent().addClass('active');
+  $('.nav.nav-sidebar li').removeClass('active');
+  $(`.nav.nav-sidebar li a[href="/${ctx.pathname.split('/')[1]}"]`).parent().addClass('active');
   next();
 };
 

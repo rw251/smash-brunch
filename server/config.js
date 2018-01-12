@@ -38,12 +38,8 @@ module.exports = {
   mongoUrl: ENV.MONGO_URL,
   mongoSessionUrl: mustExist('MONGO_SESSION_URL'),
   // user auth
-  passport: {
-    secret: ENV.PASSPORT_SECRET,
-  },
-  server: {
-    port: ENV.SERVER_PORT,
-  },
+  passport: { secret: ENV.PASSPORT_SECRET },
+  server: { port: ENV.SERVER_PORT },
   email: {
     username: ENV.SENDGRID_USERNAME,
     password: ENV.SENDGRID_PASSWORD,

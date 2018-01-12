@@ -12,6 +12,7 @@ exports.index = async (req, res, next) => {
     data.dates = dates;
     data.selectedId = req.params.id;
     data.selectedDateId = req.params.dateId;
+    data.breadcrumbs.push({ label: 'Single Practice', path: '/practice' });
     return res.render('home', data);
   } catch (err) {
     return next(err);

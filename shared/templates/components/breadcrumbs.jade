@@ -1,0 +1,6 @@
+each breadcrumb,i in breadcrumbs
+  li
+    if(i === breadcrumbs.length - 1)
+      span= breadcrumb.label
+    else
+      a.margin-right-xs(href=breadcrumb.path)= breadcrumb.label

@@ -10,4 +10,5 @@ exports.getGlobalData = user => ({
     isAdmin: user && user.roles && user.roles.indexOf('admin') > -1,
     user,
   },
+  breadcrumbs: [],
 });

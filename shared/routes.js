@@ -1,6 +1,4 @@
 const ctrl = require('./controllers');
-const home = require('./controllers/home');
-const ccg = require('./controllers/ccg');
 
 const routes = [
   { url: '/practice', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
@@ -36,7 +34,7 @@ const routes = [
  *   taking a url as first parameter then n middlewares.
  * @returns {Object} Routing logic
  */
-module.exports = (router) => {
+module.exports = router =>
   // routes.forEach((route) => {
   //   if (router[route.type]) {
   //     // Only add the route if the type is supported. This means the client side routing doesn't
@@ -48,7 +46,5 @@ module.exports = (router) => {
   //     router[route.type](route.url, ...middleware);
   //   }
   // });
-  router.get('/practice', home.index);
-  router.get('/ccg', ccg.index);
-  return { router, routes };
-};
+  ({ router, routes });
+

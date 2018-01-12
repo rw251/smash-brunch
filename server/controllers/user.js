@@ -55,9 +55,7 @@ exports.postAdd = async (req, res, next) => {
     return next(err);
   }
 
-  User.findOne({
-    email: req.body.email,
-  }, (err, user) => {
+  return User.findOne({ email: req.body.email }, (err, user) => {
     if (err) {
       console.log(`Error in SignUp: ${err}`);
       req.flash('danger', 'Error while calling db to check if account already exists.');
@@ -74,13 +72,15 @@ exports.postAdd = async (req, res, next) => {
     if (req.body.isAdmin) roles.push('admin');
     if (req.body.isCCG) roles.push('ccg');
 
-    let practices = req.body.practices;
+    const { name, email, password } = req.body;
+    let { practices } = req.body;
     if (!practices) practices = [];
     if (typeof practices === 'string') practices = [practices];
 
     const newUser = new User({
-      email: req.body.email,
-      name: req.body.name,
+      email,
+      name,
+      password,
       roles,
       practices,
     });
@@ -112,7 +112,7 @@ exports.edit = async (req, res, next) => {
 
 exports.postEdit = (req, res) => {
   const data = utils.getGlobalData(req.user);
-  const email = req.params.email;
+  const { email } = req.params;
   User.findOne({ email }, (err, user) => {
     // In case of any error, return using the done method
     if (err) {
@@ -132,7 +132,7 @@ exports.postEdit = (req, res) => {
     if (req.body.isCCG) roles.push('ccg');
     const originalUser = user;
 
-    let practices = req.body.practices;
+    let { practices } = req.body;
     if (!practices) practices = [];
     if (typeof practices === 'string') practices = [practices];
 
@@ -153,9 +153,7 @@ exports.postEdit = (req, res) => {
       });
     }
     // check no existing user with that email
-    return User.findOne({
-      email: req.body.email,
-    }, (findErr, existingUser) => {
+    return User.findOne({ email: req.body.email }, (findErr, existingUser) => {
       if (findErr) {
         console.log(`Error while checking if new email appears in system: ${err}`);
         req.flash('danger', 'Error while checking if new email appears in system.');

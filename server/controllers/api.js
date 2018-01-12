@@ -1,6 +1,6 @@
 const practiceController = require('./practice');
 const indicatorController = require('./indicator');
-const reportController = require('./report');
+const reportCtrl = require('./report');
 const dateController = require('./date');
 const common = require('./common');
 const json2csv = require('json2csv');
@@ -46,16 +46,16 @@ const getPracticeData = async (req, res, next) => {
   const rtn = { practiceId };
 
   try {
-    rtn.report = await reportController.getForPracticeOnDate(practiceId, dateId);
-    rtn.comparisonReport = await reportController.getForPracticeOnDate(practiceId, comparisonDateId);
+    rtn.report = await reportCtrl.getForPracticeOnDate(practiceId, dateId);
+    rtn.comparisonReport = await reportCtrl.getForPracticeOnDate(practiceId, comparisonDateId);
     rtn.practice = await practiceController.getById(practiceId);
 
     const firstReportDate = rtn.practice.first_report_date ? rtn.practice.first_report_date : null;
 
     rtn.datesForChart = await dateController.getDatesForCharts(firstReportDate);
     rtn.dateLookup = await dateController.list();
-    rtn.allReports = await reportController.getForPractice(practiceId);
-    rtn.ccgTotals = await reportController.getCcgTotals(dateId);
+    rtn.allReports = await reportCtrl.getForPractice(practiceId);
+    rtn.ccgTotals = await reportCtrl.getCcgTotals(dateId);
     rtn.indicatorLookup = await indicatorController.list();
     rtn.practiceLookup = await practiceController.list();
   } catch (err) {
@@ -94,7 +94,15 @@ const getMetaData = (practiceId, practiceLookup, dateId, comparisonDateId, dateL
   return metadata;
 };
 
-const getTableData = (report, comparisonReport, practice, indicatorLookup, ccgAverages, sortBy, sortReverse) => {
+const getTableData = (
+  report,
+  comparisonReport,
+  practice,
+  indicatorLookup,
+  ccgAverages,
+  sortBy,
+  sortReverse
+) => {
   let ind = {};
   let reportIndicator = {};
   let indicator = {};
@@ -121,56 +129,57 @@ const getTableData = (report, comparisonReport, practice, indicatorLookup, ccgAv
 
     ind = indicatorLookup[i];
 
-    if (!common.isIndicatorUsed(ind._id, practice)) continue;
+    if (common.isIndicatorUsed(ind._id, practice)) {
+      indicator.id = ind._id;
+      indicator.short_name = ind.short_name;
+      indicator.long_name = ind.long_name;
+      indicator.severity = ind.severity;
 
-    indicator.id = ind._id;
-    indicator.short_name = ind.short_name;
-    indicator.long_name = ind.long_name;
-    indicator.severity = ind.severity;
+      // returns null if indicator not in report
+      reportIndicator = common.getObjectById(ind._id, report.i);
 
-    reportIndicator = common.getObjectById(ind._id, report.i); // returns null if indicator not in report
+      // Set default values to use if reportIndicator is null
+      // Indicator is absent if eligible count is 0.
+      if (!reportIndicator) {
+        reportIndicator = { n: 0, d: 0, p: [] };
+      }
 
-    // Set default values to use if reportIndicator is null
-    // Indicator is absent if eligible count is 0.
-    if (!reportIndicator) {
-      reportIndicator = { n: 0, d: 0, p: [] };
+      indicator.num = reportIndicator.n;
+      indicator.denom = reportIndicator.d;
+      if (indicator.denom > 0) {
+        avg = (indicator.num / indicator.denom) * 100;
+      }
+      indicator.avg = +avg.toFixed(2);
+
+
+      ccgAverage = common.getObjectByUnderscoreId(indicator.id, ccgAverages);
+
+      if (ccgAverage && ccgAverage.d > 0) {
+        ccgAvg = (ccgAverage.n / ccgAverage.d) * 100;
+      }
+
+      indicator.ccg = +ccgAvg.toFixed(2);
+
+      reportPatients = reportIndicator.p;
+
+      comparisonIndicators = common.getObjectById(indicator.id, comparisonReport.i);
+
+      comparisonPatients = [];
+      if (comparisonIndicators) {
+        comparisonPatients = comparisonIndicators.p;
+      }
+
+      resolvedPatientCount = common.getResolvedCases(reportPatients, comparisonPatients).length;
+      newPatientCount = common.getNewCases(reportPatients, comparisonPatients).length;
+      existingPatientCount = common.getExistingCases(reportPatients, comparisonPatients).length;
+
+      indicator.resolved = resolvedPatientCount;
+      indicator.new = newPatientCount;
+      indicator.existing = existingPatientCount;
+      indicator.trendValue = newPatientCount - resolvedPatientCount;
+
+      indicators.push(indicator);
     }
-
-    indicator.num = reportIndicator.n;
-    indicator.denom = reportIndicator.d;
-    if (indicator.denom > 0) {
-      avg = (indicator.num / indicator.denom) * 100;
-    }
-    indicator.avg = +avg.toFixed(2);
-
-
-    ccgAverage = common.getObjectByUnderscoreId(indicator.id, ccgAverages);
-
-    if (ccgAverage && ccgAverage.d > 0) {
-      ccgAvg = (ccgAverage.n / ccgAverage.d) * 100;
-    }
-
-    indicator.ccg = +ccgAvg.toFixed(2);
-
-    reportPatients = reportIndicator.p;
-
-    comparisonIndicators = common.getObjectById(indicator.id, comparisonReport.i);//  comparisonReport.i.filter(fnOutside(indicator.id));
-
-    comparisonPatients = [];
-    if (comparisonIndicators) {
-      comparisonPatients = comparisonIndicators.p;
-    }
-
-    resolvedPatientCount = common.getResolvedCases(reportPatients, comparisonPatients).length;
-    newPatientCount = common.getNewCases(reportPatients, comparisonPatients).length;
-    existingPatientCount = common.getExistingCases(reportPatients, comparisonPatients).length;
-
-    indicator.resolved = resolvedPatientCount;
-    indicator.new = newPatientCount;
-    indicator.existing = existingPatientCount;
-    indicator.trendValue = newPatientCount - resolvedPatientCount;
-
-    indicators.push(indicator);
   }
 
   if (sortBy) {
@@ -202,10 +211,10 @@ const getTrendChartData = (allReports, practice, indicatorLookup, dateLookup) =>
 
   for (i = 0; i < indicatorLookup.length; i += 1) {
     indicator = indicatorLookup[i];
-    if (!common.isIndicatorUsed(indicator._id, practice)) continue;
-
-    rtn.num.columns.push([indicator.short_name]);
-    rtn.avg.columns.push([indicator.short_name]);
+    if (common.isIndicatorUsed(indicator._id, practice)) {
+      rtn.num.columns.push([indicator.short_name]);
+      rtn.avg.columns.push([indicator.short_name]);
+    }
   }
 
   for (i = 0; i < allReports.length; i += 1) {
@@ -217,12 +226,17 @@ const getTrendChartData = (allReports, practice, indicatorLookup, dateLookup) =>
     rtn.avg.columns[0].push(date);
     let k = 0;
     for (j = 0; j < indicatorLookup.length; j += 1) {
-      if (!common.isIndicatorUsed(indicatorLookup[j]._id, practice)) continue;
-      indicator = common.getObjectById(indicatorLookup[j]._id, report.i);
+      if (common.isIndicatorUsed(indicatorLookup[j]._id, practice)) {
+        indicator = common.getObjectById(indicatorLookup[j]._id, report.i);
 
-      rtn.num.columns[k + 1].push(indicator !== null ? indicator.n : 0);
-      rtn.avg.columns[k + 1].push(indicator !== null ? (indicator.d > 0 ? (indicator.n / indicator.d) * 100 : 0) : 0);
-      k += 1;
+        const numToPush = indicator !== null ? indicator.n : 0;
+        let avgToPush = 0;
+        if (indicator && indicator.d > 0) avgToPush = (indicator.n / indicator.d) * 100;
+
+        rtn.num.columns[k + 1].push(numToPush);
+        rtn.avg.columns[k + 1].push(avgToPush);
+        k += 1;
+      }
     }
   }
 
@@ -258,9 +272,11 @@ exports.getPracticeData = async (req, res, next) => {
   const rtn = {};
 
   try {
-    rtn.tableData = getTableData(data.report, data.comparisonReport, data.practice, data.indicatorLookup, data.ccgAverages);
-    rtn.summaryData = getSummaryData(data.report, data.practice);
-    rtn.trendChartData = getTrendChartData(data.allReports, data.practice, data.indicatorLookup, data.datesForChart);
+    const { report, comparisonReport, practice, indicatorLookup } = data;
+    const { ccgAverages, allReports, datesForChart } = data;
+    rtn.tableData = getTableData(report, comparisonReport, practice, indicatorLookup, ccgAverages);
+    rtn.summaryData = getSummaryData(report, practice);
+    rtn.trendChartData = getTrendChartData(allReports, practice, indicatorLookup, datesForChart);
     res.json(rtn);
   } catch (e) {
     common.logError('[single-practice-api-controller] [exports.data] Error processing data: ', e);
@@ -289,14 +305,20 @@ exports.exportPracticeData = async (req, res, next) => {
   */
   json2csv(
     {
-      data: getTableData(data.report, data.comparisonReport, data.practice, data.indicatorLookup, data.ccgAverages, data.sortBy, data.sortReverse),
+      data: getTableData(
+        data.report, data.comparisonReport, data.practice,
+        data.indicatorLookup, data.ccgAverages, data.sortBy, data.sortReverse
+      ),
       fields: ['short_name', 'num', 'denom', 'avg', 'ccg', 'resolved', 'existing', 'new', 'trendValue'],
       fieldNames: ['Indicator', 'Affected patients', 'Eligible patients', '% of eligible patients affected', 'CCG Avg (%)', 'Successful intervention', 'Action pending', 'New cases', 'Trend'],
     },
     (err, csv) => {
-      const metadata = getMetaData(data.practiceId, data.practiceLookup, data.dateId, data.comparisonDateId, data.dateLookup);
+      const metadata = getMetaData(
+        data.practiceId, data.practiceLookup,
+        data.dateId, data.comparisonDateId, data.dateLookup
+      );
       res.attachment('PatientSafety-Dashboard-SinglePractice-SingleIndicator.csv');
       res.end(metadata + csv, 'utf8');
-    },
+    }
   );
 };

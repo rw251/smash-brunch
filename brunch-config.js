@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
   // See http://brunch.io for documentation.
   paths: {
@@ -13,9 +11,7 @@ module.exports = {
         'js/libraries.js': /^(?!app\/)/,
         'js/app.js': /^app\//,
       },
-      order: {
-        before: [/jquery/],
-      },
+      order: { before: [/jquery/] },
     },
     stylesheets: {
       joinTo: 'css/app.css',
@@ -27,30 +23,15 @@ module.exports = {
         ],
       },
     },
-    templates: {
-      joinTo: 'js/app.js',
-    },
+    templates: { joinTo: 'js/app.js' },
   },
 
   plugins: {
-    babel: {
-      // pattern: /sw\.js$/,
-    },
-    sass: {
-      options: {
-        includePaths: ['app/styles'],
-      },
-    },
+    sass: { options: { includePaths: ['app/styles'] } },
     pug: {
       globals: ['App'],
       inlineRuntimeFunctions: true,
     },
-    uglify: {
-      compress: {
-        global_defs: {
-          DEBUG: false,
-        },
-      },
-    },
+    uglify: { compress: { global_defs: { DEBUG: false } } },
   },
 };

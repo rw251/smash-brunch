@@ -4,9 +4,19 @@ const defaultController = require('./default');
 const global = require('../scripts/global');
 const $ = require('jquery');
 const page = require('page');
+const breadcrumbs = require('./breadcrumbs');
+
+const displayBreadcrumbs = () => {
+  const bc = [{ label: 'Indicator Evidence Summaries', path: '/evidence' }];
+  if (global.selectedIndicatorId) {
+    bc.push({ label: `prac${global.selectedIndicatorId}` });
+  }
+  breadcrumbs.display(bc);
+};
 
 const updateUrl = () => {
   page.show(`/evidence/${global.selectedIndicatorId ? `${global.selectedIndicatorId}` : '0'}`, null, false);
+  displayBreadcrumbs();
 };
 
 const updateGlobalValue = prop => (changeEvent) => {
@@ -39,6 +49,7 @@ exports.index = (ctx) => {
           selectedId: ctx.params.id,
         });
         wireUpIndex();
+        displayBreadcrumbs();
         ready();
       });
     });

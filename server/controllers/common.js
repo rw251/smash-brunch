@@ -55,6 +55,10 @@ module.exports = {
   },
 
   isIndicatorUsed(indicatorId, practice) {
-    return (!practice.indicators || practice.indicators.length === 0 || practice.indicators.indexOf(indicatorId) >= 0);
+    return (
+      !practice.indicators ||
+      practice.indicators.length === 0 ||
+      practice.indicators.indexOf(indicatorId) >= 0
+    );
   },
 };

@@ -19,6 +19,19 @@ const DEBUG = true;
 
 const routes = require('./server/routes/index')(passport);
 
+// // This detects exit events and lists all the naughty processes
+// // that are preventing the app from exiting cleanly
+// // see https://stackoverflow.com/a/21948167/596639
+// process.on('SIGINT', () => {
+//   console.log('Nice SIGINT-handler');
+//   const listeners = process.listeners('SIGINT');
+//   for (let i = 0; i < listeners.length; i += 1) {
+//     console.log(listeners[i].toString());
+//   }
+
+//   process.exit();
+// });
+
 module.exports = function brunchServer(PORT, PATH, CALLBACK) {
   const app = express();
   app.use(compression()); // enable gzip compression

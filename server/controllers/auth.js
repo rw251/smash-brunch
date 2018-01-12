@@ -22,7 +22,7 @@ exports.login = (req, res) => {
  */
 
 exports.postLogin = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
+  req.assert('username', 'Email is not valid').isEmail();
   req.assert('password', 'Password cannot be blank').notEmpty();
   req.sanitize('email').normalizeEmail({ remove_dots: false });
 
@@ -33,7 +33,7 @@ exports.postLogin = (req, res, next) => {
     return res.redirect('/login');
   }
 
-  return passport.authenticate('google', (err, user, info) => {
+  return passport.authenticate('login', (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('danger', info && info.msg ? info.msg : 'Unknown error occurred');
@@ -78,9 +78,7 @@ exports.reset = (req, res, next) => {
         req.flash('danger', 'Password reset token is invalid or has expired.');
         return res.redirect('/forgot');
       }
-      return res.render('auth/reset', {
-        title: 'Password Reset',
-      });
+      return res.render('auth/reset', { title: 'Password Reset' });
     });
 };
 

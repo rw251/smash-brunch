@@ -7,7 +7,7 @@ const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const notfound = require('../controllers/404');
 const ctrl = require('../../shared/controllers');
-const routes = require('../../shared/routes');
+const { routes } = require('../../shared/routes')({ get: page });
 const validateControllers = require('../../shared/validate');
 const utils = require('./utils');
 
@@ -23,12 +23,13 @@ validateControllers(controllers);
 
 const passThroughToServer = (ctx) => {
   if (ctx.handled) return;
-  const current = location.pathname + location.search; // get requested url
+  const current = window.location.pathname + window.location.search; // get requested url
 
-  if (current === ctx.canonicalPath) return; // don't navigate if the same - might need to remove this
+  // don't navigate if the same - might need to remove this
+  if (current === ctx.canonicalPath) return;
   page.stop(); // stop page routing
   ctx.handled = false;
-  location.href = ctx.canonicalPath; // do redirect to hit server
+  window.location.href = ctx.canonicalPath; // do redirect to hit server
 };
 
 const getRoutesWithoutAuthentication = routes.filter(route => !route.needsAuth && route.type === 'get');
@@ -53,7 +54,7 @@ getRoutesWithoutAuthentication.forEach(wireUpRoute);
  *  The following need to hit the server.
  */
 page('/logout', passThroughToServer);
-page('/auth/google', passThroughToServer);
+// page('/auth/google', passThroughToServer);
 
 /*
  * everything else checks if logged in.
