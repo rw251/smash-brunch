@@ -40,4 +40,4 @@ exports.list = getAllDates;
 exports.listForDisplay = () => getAllDates().then(prepareDatesForDisplay);
 
 exports.getDatesForCharts = (firstReportDate = new Date(2000, 1, 1)) =>
-  DateModel.find({ date: { $gte: firstReportDate } }).lean().exec();
+  DateModel.find({ date: { $gte: firstReportDate.toISOString() } }).lean().exec();

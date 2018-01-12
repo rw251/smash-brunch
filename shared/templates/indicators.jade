@@ -1,9 +1,11 @@
-.container
-  .row
-    .col-xs-12
-      select#indicatorList.form-control.selectpicker(data-live-search="true",data-style="btn-lg btn-default",title="Select an indicator to view the evidence summary")
-        each indicator in indicators
-          option(value=indicator._id, selected=indicator._id===+selectedId)= indicator.short_name
-  #info
-    - if(selectedId && selectedId>0 && indicators.length>selectedId)
-      != indicators[selectedId].info
+.row
+  .col-xs-12
+    select#indicatorList.form-control.selectpicker(data-live-search="true",data-style="btn-lg btn-default",title="Select an indicator to view the evidence summary")
+      each indicator in indicators
+        option(value=indicator._id, selected=indicator._id===+selectedId)= indicator.short_name
+hr
+#info
+  if(selectedId && selectedId>0 && indicators.length>selectedId)
+    != indicators[selectedId].info
+  else
+    | The evidence summaries for each indicator are displayed here - please select an indicator from the drop down list above.

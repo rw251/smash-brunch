@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "prestart": "node --version",
-    "start": "brunch watch --server | pino",
+    "start": "brunch watch --server",
     "build": "rm -rf dist/ && brunch build --production",
     "build:dev": "brunch build",
     "postinstall": "npm run build",
     "predebug": "npm run build:dev",
-    "debug": "node --inspect-brk server.js | pino",
+    "debug": "node --inspect-brk server.js",
     "pretest": "eslint --ignore-path .gitignore --ignore-pattern sw.js --ext .js app server shared",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -41,6 +41,7 @@
     "body-parser": "^1.17.1",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
+    "c3": "^0.4.18",
     "compression": "^1.6.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -74,6 +75,7 @@
     "passport-oauth2": "^1.4.0",
     "pino": "^4.5.1",
     "pug": "^2.0.0-rc.1",
+    "qs": "^6.5.1",
     "serve-favicon": "^2.4.3"
   }
 }

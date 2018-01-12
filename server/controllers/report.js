@@ -4,7 +4,7 @@ const Report = require('../models/Report');
 exports.getForPracticeOnDate = (practiceId, dateId) =>
   Report.findOne({ practiceId, dateId }).lean().exec();
 
-exports.getForPractice = practiceId => Report.findOne({ practiceId }).lean().exec();
+exports.getForPractice = practiceId => Report.find({ practiceId }).lean().exec();
 
 exports.getCcgTotals = (dateId) => {
   Report.aggregate([

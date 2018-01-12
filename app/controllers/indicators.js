@@ -9,7 +9,7 @@ const breadcrumbs = require('./breadcrumbs');
 const displayBreadcrumbs = () => {
   const bc = [{ label: 'Indicator Evidence Summaries', path: '/evidence' }];
   if (global.selectedIndicatorId) {
-    bc.push({ label: `prac${global.selectedIndicatorId}` });
+    bc.push({ label: $(`#indicatorList option[value=${global.selectedIndicatorId}]`).text() });
   }
   breadcrumbs.display(bc);
 };
@@ -40,6 +40,7 @@ exports.index = (ctx) => {
   global.serverOrClientLoad()
     .onServer((ready) => {
       wireUpIndex();
+      displayBreadcrumbs();
       ready();
     })
     .onClient((ready) => {

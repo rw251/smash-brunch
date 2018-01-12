@@ -6,15 +6,33 @@ const defaultController = require('./default');
 const $ = require('jquery');
 const page = require('page');
 const breadcrumbs = require('./breadcrumbs');
+const qs = require('qs');
+const charts = require('./charts');
 
 let table;
+let $exportButton;
 
 const displayBreadcrumbs = () => {
   const bc = [{ label: 'Single Practice', path: '/practice' }];
   if (global.selectedPracticeId) {
-    bc.push({ label: `prac${global.selectedPracticeId}` });
+    bc.push({ label: $(`#practiceList option[value=${global.selectedPracticeId}]`).text() });
   }
   breadcrumbs.display(bc);
+};
+
+const updateUrlParams = () => {
+  const queryParams = {};
+
+  // selected tab
+  if (global.singlePracticeTabId) queryParams.tabId = global.singlePracticeTabId;
+
+  // selected chart
+  if (global.singlePracticeChartId) queryParams.chartId = global.singlePracticeChartId;
+
+  page.show(`${window.location.pathname}?${qs.stringify(queryParams)}`, null, false);
+  // sorted by
+  // sort direction
+  // chart id
 };
 
 const displayDetails = (done) => {
@@ -22,7 +40,8 @@ const displayDetails = (done) => {
 
   if (global.selectedPracticeId && global.selectedDateId) {
     api.practiceData(global.selectedPracticeId, global.selectedDateId, 2618, (err, data) => {
-      console.log(data);
+      data.tabId = global.singlePracticeTabId;
+      data.chartId = global.singlePracticeChartId;
       const homeContentHtml = homeContentTemplate(data);
       $('#content').html(homeContentHtml);
       table = $('#indicatorTable').DataTable({
@@ -32,23 +51,41 @@ const displayDetails = (done) => {
         scrollY: '50vh',
         scrollCollapse: true,
       });
+      $exportButton = $('#export');
       $('#tableTab').on('shown.bs.tab', () => {
         table.columns.adjust().draw(false); // ensure headers display correctly on hidden tab
+        $exportButton.show(); // only want export button on table tab
       });
+      $('#tableTab').on('hidden.bs.tab', () => {
+        $exportButton.hide(); // only want export button on table tab
+      });
+      $('li a[role="tab"]').on('shown.bs.tab', (e) => {
+        global.singlePracticeTabId = $(e.currentTarget).data('id');
+        updateUrlParams();
+      });
+      if (global.singlePracticeChartId) {
+        charts.displaySinglePracticeChart(global.singlePracticeChartId, data);
+      }
+      $('#id_chart')
+        .selectpicker()
+        .on('change', (e) => {
+          global.singlePracticeChartId = $(e.currentTarget).val();
+          charts.displaySinglePracticeChart(global.singlePracticeChartId, data);
+          updateUrlParams();
+        });
       if (done) done();
     });
   } else if (done) done();
 };
 
 const updateUrl = () => {
-  console.log(global.selectedPracticeId, global.selectedDateId);
   page.show(`/practice/${global.selectedPracticeId ? `${global.selectedPracticeId}` : '0'}${global.selectedDateId ? `/${global.selectedDateId}` : ''}`, null, false);
-  displayDetails();
 };
 
 const updateGlobalValue = prop => (changeEvent) => {
   global[prop] = $(changeEvent.currentTarget).val();
   updateUrl();
+  displayDetails();
 };
 
 const wireUpIndex = (done) => {
@@ -59,8 +96,20 @@ const wireUpIndex = (done) => {
 };
 
 exports.index = (ctx) => {
-  global.selectedPracticeId = ctx.params.id || 0;
-  global.selectedDateId = ctx.params.dateId || false;
+  if (ctx.params.id) { global.selectedPracticeId = ctx.params.id; }
+  if (ctx.params.dateId) { global.selectedDateId = ctx.params.dateId; }
+
+  updateUrl();
+
+  const query = qs.parse(ctx.querystring);
+  if (query.tabId) {
+    global.singlePracticeTabId = query.tabId;
+  }
+  if (query.chartId) {
+    global.singlePracticeChartId = query.chartId;
+  }
+
+  updateUrlParams();
 
   global.serverOrClientLoad()
     .onServer((ready) => {
@@ -73,9 +122,9 @@ exports.index = (ctx) => {
           if (!global.selectedDateId) global.selectedDateId = datesForDisplay[0]._id;
           defaultController(homeTemplate, {
             practices,
-            selectedId: ctx.params.id,
+            selectedId: global.selectedPracticeId,
             dates: datesForDisplay,
-            selectedDateId: ctx.params.dateId,
+            selectedDateId: global.selectedDateId,
             breadcrumbs: [{ label: 'Single Practice' }],
           });
           wireUpIndex(ready);

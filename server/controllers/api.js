@@ -50,10 +50,11 @@ const getPracticeData = async (req, res, next) => {
     rtn.comparisonReport = await reportCtrl.getForPracticeOnDate(practiceId, comparisonDateId);
     rtn.practice = await practiceController.getById(practiceId);
 
-    const firstReportDate = rtn.practice.first_report_date ? rtn.practice.first_report_date : null;
+    const firstReportDate = rtn.practice.first_report_date || new Date(2000, 1, 1);
 
-    rtn.datesForChart = await dateController.getDatesForCharts(firstReportDate);
+    // rtn.datesForChart = await dateController.getDatesForCharts(firstReportDate);
     rtn.dateLookup = await dateController.list();
+    rtn.datesForChart = rtn.dateLookup.filter(v => new Date(v.date) >= firstReportDate);
     rtn.allReports = await reportCtrl.getForPractice(practiceId);
     rtn.ccgTotals = await reportCtrl.getCcgTotals(dateId);
     rtn.indicatorLookup = await indicatorController.list();
