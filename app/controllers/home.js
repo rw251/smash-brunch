@@ -14,7 +14,7 @@ let $exportButton;
 
 const displayBreadcrumbs = () => {
   const bc = [{ label: 'Single Practice', path: '/practice' }];
-  if (global.selectedPracticeId) {
+  if (global.selectedPracticeId > 0) {
     bc.push({ label: $(`#practiceList option[value=${global.selectedPracticeId}]`).text() });
   }
   breadcrumbs.display(bc);
@@ -29,16 +29,18 @@ const updateUrlParams = () => {
   // selected chart
   if (global.singlePracticeChartId) queryParams.chartId = global.singlePracticeChartId;
 
-  page.show(`${window.location.pathname}?${qs.stringify(queryParams)}`, null, false);
+  let queryString = qs.stringify(queryParams);
+  if (queryString.length > 0) queryString = `?${queryString}`;
+
+  page.show(`${window.location.pathname}${queryString}`, null, false);
   // sorted by
   // sort direction
-  // chart id
 };
 
 const displayDetails = (done) => {
   displayBreadcrumbs();
 
-  if (global.selectedPracticeId && global.selectedDateId) {
+  if (global.selectedPracticeId > 0 && global.selectedDateId) {
     api.practiceData(global.selectedPracticeId, global.selectedDateId, 2618, (err, data) => {
       data.tabId = global.singlePracticeTabId;
       data.chartId = global.singlePracticeChartId;
@@ -79,11 +81,11 @@ const displayDetails = (done) => {
 };
 
 const updateUrl = () => {
-  page.show(`/practice/${global.selectedPracticeId ? `${global.selectedPracticeId}` : '0'}${global.selectedDateId ? `/${global.selectedDateId}` : ''}`, null, false);
+  page.show(`/practice/${global.selectedPracticeId}/${global.selectedDateId}`, null, false);
 };
 
 const updateGlobalValue = prop => (changeEvent) => {
-  global[prop] = $(changeEvent.currentTarget).val();
+  global[prop] = +$(changeEvent.currentTarget).val();
   updateUrl();
   displayDetails();
 };
@@ -96,8 +98,8 @@ const wireUpIndex = (done) => {
 };
 
 exports.index = (ctx) => {
-  if (ctx.params.id) { global.selectedPracticeId = ctx.params.id; }
-  if (ctx.params.dateId) { global.selectedDateId = ctx.params.dateId; }
+  if (ctx.params.id) { global.selectedPracticeId = +ctx.params.id; }
+  if (ctx.params.dateId) { global.selectedDateId = +ctx.params.dateId; }
 
   updateUrl();
 

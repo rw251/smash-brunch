@@ -18,5 +18,10 @@ exports.forgot = () => {
 };
 
 exports.changePassword = () => {
-  defaultController(changePasswordTemplate);
+  global.serverOrClientLoad()
+    .onClient((ready) => {
+      defaultController(changePasswordTemplate);
+      ready();
+    })
+    .onServer();
 };

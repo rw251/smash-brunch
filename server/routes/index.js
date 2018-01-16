@@ -9,7 +9,7 @@ const apiController = require('../controllers/api');
 const sharedRoutes = require('../../shared/routes');
 const cors = require('cors');
 const ctrl = require('../../shared/controllers');
-const passport = require('passport');
+// const passport = require('passport');
 const validateControllers = require('../../shared/validate');
 
 require('../passport/index');
@@ -75,8 +75,12 @@ module.exports = function routeIndex() {
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getPracticeData);
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId/export', isAuthenticated, apiController.exportPracticeData);
 
+  router.get('/api/indicator/all/summaryfordate/:dateId', isAuthenticated, apiController.getAllIndicatorData);
+  // router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith
+  // /:comparisonDateId', isAuthenticated, apiController.get)
   // router.get('/auth/google', passport.authenticate('google'));
-  // router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+  // router.get('/auth/google/callback', passport.authenticate('google',
+  // { failureRedirect: '/login' }), (req, res) => {
   //   // Successful authentication, redirect to original url or home.
   //   let red = req.session.redirect_to || '/practice';
   //   if (req.body.hash) red += `#${req.body.hash}`;

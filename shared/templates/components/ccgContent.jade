@@ -1,0 +1,58 @@
+if errorAlert
+  .top-buffer
+    alert(type='{{errorAlert.type}}')= errorAlert.msg
+else
+  .pull-right
+    button#export.btn.btn-primary(type='button',style='display:none') Export
+  ul.nav.nav-tabs(role='tablist')
+    li(class=!tabId || +tabId ===0 ? 'active' : '', role='presentation')
+      a#tableTab(href='#table', aria-controls='table', role='tab', data-toggle='tab', data-id='1') Table
+    li(class=+tabId === 1 ? 'active' : '', role='presentation')
+      a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab', data-id='2') Charts
+  // Tab panes
+  .tab-content
+    #table.tab-pane.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
+      .clearfix
+      .top-buffer
+        table#indicatorTable.table.table-bordered.table-striped
+          thead
+            tr
+              th.pointer(tooltip='{{field.tooltip}}') Practice
+              th.pointer(tooltip='{{field.tooltip}}') Affected patients
+              th.pointer(tooltip='{{field.tooltip}}') % of eligible patients affected
+              th.pointer(tooltip='{{field.tooltip}}') CCG Avg (%)
+              th.pointer(tooltip='{{field.tooltip}}') More than one indicator
+              th.pointer(tooltip='{{field.tooltip}}') Show on top
+          tbody
+            each practice in tableData
+              tr.no-priority
+                td(tooltip='{{indicator.long_name}}', tooltip-append-to-body='true')= practice.short_name
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{practice.id}}/date/{{dataService.date._id}}/compareWith//type/num?tabId=0&chart=table')= practice.num
+                td= practice.avg
+                td= practice.ccg
+                td
+                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{practice.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/resolved?tabId=0&chart=table')= practice.patientsMultiple
+                td
+                  input(type='checkbox', ng-checked='isChecked(practice.id)', ng-click='handleCheckBoxClick(practice.id)')
+    #charts.tab-pane.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
+      .top-buffer
+        select#id_chart.selectpicker(data-width="auto",title="Please select a chart to view...")
+          option(value='0', selected=chartId==='0') Proportion of eligible patients affected
+          option(value='1', selected=chartId==='1') Number of affected patients over time
+          option(value='2', selected=chartId==='2') Proportion of eligible patients affected over time
+        .panel.panel-default
+          .panel-body
+            .inline-element.left-buffer.align-bottom.pull-right
+              div
+                label End date:
+              div
+                select
+            .inline-element.align-bottom.pull-right
+              div
+                label Start date:
+              div
+                select
+            .clearfix
+            #singlePracticeChart
+

@@ -259,7 +259,7 @@ exports.postChangePassword = (req, res, next) => {
     return res.redirect('/password/change');
   }
 
-  return User.findById(req.user.id, (err, userFromDb) => {
+  return User.findById(req.user._id, (err, userFromDb) => {
     const user = userFromDb;
     if (err) { return next(err); }
     user.password = req.body.password;

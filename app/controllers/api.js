@@ -58,6 +58,25 @@ exports.user = (email, callback) => {
   });
 };
 
+exports.ccgAllIndicatorData = (dateId, callback) => {
+  if (!global.ccgData) global.ccgData = {};
+  if (!global.ccgData.all) global.ccgData.all = {};
+  if (global.ccgData.all[dateId]) {
+    return callback(null, global.ccgData.all[dateId]);
+  }
+  return $
+    .ajax({
+      url: `/api/indicator/all/summaryfordate/${dateId}`,
+      success(data) {
+        global.ccgData.all[dateId] = data;
+        return callback(null, data);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};
+
 exports.practiceData = (practiceId, dateId, comparisonDateId, callback) => {
   if (!global.practiceData) global.practiceData = {};
   if (!global.practiceData[practiceId]) global.practiceData[practiceId] = {};

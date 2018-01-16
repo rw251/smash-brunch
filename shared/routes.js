@@ -5,6 +5,8 @@ const routes = [
   { url: '/practice/:id', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:id/:dateId', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/ccg', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
+  { url: '/ccg/:id', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
+  { url: '/ccg/:id/:dateId', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },
   { url: '/evidence', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
   { url: '/evidence/:id', type: 'get', needsAuth: true, controller: ctrl.evidence, method: 'index' },
   { url: '/help', type: 'get', needsAuth: true, controller: ctrl.help, method: 'index' },

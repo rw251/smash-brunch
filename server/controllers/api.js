@@ -65,6 +65,28 @@ const getPracticeData = async (req, res, next) => {
   return rtn;
 };
 
+const getAllIndicatorData = async (req, res, next) => {
+  const dateId = +req.params.dateId;
+  const rtn = { };
+
+  try {
+    rtn.reports = await reportCtrl.getAllIndicatorData(dateId);
+
+    // const firstReportDate = rtn.practice.first_report_date || new Date(2000, 1, 1);
+
+    // rtn.datesForChart = await dateController.getDatesForCharts(firstReportDate);
+    rtn.dateLookup = await dateController.list();
+    rtn.datesForChart = rtn.dateLookup; // .filter(v => new Date(v.date) >= firstReportDate);
+
+    rtn.allReports = await reportCtrl.getForAllIndicators(rtn.datesForChart.map(x => x._id));
+    rtn.ccgTotals = await reportCtrl.getCcgTotals(dateId);
+    rtn.practiceLookup = await practiceController.list();
+  } catch (err) {
+    return next(err);
+  }
+  return rtn;
+};
+
 const getSummaryData = (report, practice) => {
   const summaryData = {};
 
@@ -244,6 +266,123 @@ const getTrendChartData = (allReports, practice, indicatorLookup, dateLookup) =>
   return rtn;
 };
 
+const getTableDataForAllIndicators = (reports, practiceLookup, sortBy, sortReverse) => {
+  let pra;
+  let report;
+  let i;
+  let practices = [];
+  let practice = {};
+  let avg;
+
+  let totalAffected = 0;
+  let totalEligible = 0;
+  for (i = 0; i < reports.length; i += 1) {
+    totalAffected += reports[i].affected;
+    totalEligible += reports[i].eligible;
+  }
+  const ccgAvg = totalEligible > 0 ? (100 * totalAffected) / totalEligible : 0;
+
+  // Assume that reports array includes a report for each practice.
+  for (i = 0; i < reports.length; i += 1) {
+    pra = {};
+    avg = 0;
+
+    report = reports[i];
+    const { practiceId } = report;
+    pra.id = practiceId;
+    practice = common.getObjectByUnderscoreId(practiceId, practiceLookup);
+    if (practice) { // Must be a practice that we don't show
+      pra.short_name = practice.short_name;
+      pra.long_name = practice.long_name;
+      pra.num = report.affectedUnique;
+      pra.patientsMultiple = report.multiple;
+      if (report.eligible > 0) {
+        avg = (report.affected / report.eligible) * 100;
+      }
+      pra.avg = +avg.toFixed(2);
+      pra.ccg = +ccgAvg.toFixed(2);
+
+      practices.push(pra);
+    }
+  }
+
+  if (sortBy) {
+    const multiplier = sortReverse ? -1 : 1;
+    practices = practices.sort((a, b) => {
+      if (typeof (a[sortBy]) === 'number') {
+        return multiplier * (a[sortBy] - b[sortBy]);
+      }
+      if (a[sortBy] < b[sortBy]) {
+        return -1 * multiplier;
+      } else if (a[sortBy] > b[sortBy]) {
+        return 1 * multiplier;
+      }
+      return 0;
+    });
+  }
+
+  return practices;
+};
+
+const getTrendDataForAllIndicators = (allReports, practiceLookup, dateLookup) => {
+  let i;
+  let k;
+  let practice;
+  let dateReports;
+  let dateReport;
+  let ccgAffected;
+  let ccgEligible;
+
+  const rtn = { num: { x: 'x', columns: [['x']] }, avg: { x: 'x', columns: [['x'], ['CCG Avg']] }, patientsMultiple: { x: 'x', columns: [['x']] } };
+
+  // Assume that reports array includes a report for each practice.
+  for (i = 0; i < practiceLookup.length; i += 1) {
+    practice = practiceLookup[i];
+
+    rtn.num.columns.push([practice.short_name]);
+    rtn.avg.columns.push([practice.short_name]);
+    rtn.patientsMultiple.columns.push([practice.short_name]);
+  }
+
+  const fnOutside = result => result.dateId === dateLookup[i]._id;
+
+  for (i = 0; i < dateLookup.length; i += 1) {
+    const { date } = dateLookup[i];
+
+    rtn.num.columns[0].push(date);
+    rtn.avg.columns[0].push(date);
+    rtn.patientsMultiple.columns[0].push(date);
+
+    dateReports = allReports.filter(fnOutside);
+
+    // calculate the CCG averages
+    ccgAffected = 0;
+    ccgEligible = 0;
+    for (k = 0; k < dateReports.length; k += 1) {
+      dateReport = dateReports[k];
+      ccgAffected += dateReport.affected;
+      ccgEligible += dateReport.eligible;
+    }
+
+    rtn.avg.columns[1].push(ccgEligible > 0 ? (100 * ccgAffected) / ccgEligible : 0);
+
+    for (k = 0; k < practiceLookup.length; k += 1) {
+      dateReport = common.getObjectByPracticeId(practiceLookup[k]._id, dateReports);
+      if (dateReport === null) {
+        dateReport = { affectedUnique: 0, eligible: 0, affected: 0, multiple: 0 };
+      }
+
+      rtn.num.columns[k + 1].push(dateReport.affectedUnique);
+      rtn.avg.columns[k + 2].push(dateReport.eligible > 0
+        ? (100 * dateReport.affected) / dateReport.eligible
+        : 0);
+      rtn.patientsMultiple.columns[k + 1].push(dateReport.multiple);
+    }
+  }
+
+  return rtn;
+};
+
 exports.listIndicators = (req, res, next) => {
   indicatorController.list()
     .then(indicators => res.send(indicators))
@@ -268,6 +407,21 @@ exports.listDatesForDisplay = (req, res, next) => {
     .catch(err => next(err));
 };
 
+exports.getAllIndicatorData = async (req, res, next) => {
+  const data = await getAllIndicatorData(req, res, next);
+  const rtn = {};
+
+  try {
+    const { reports, practiceLookup, allReports, datesForChart } = data;
+    rtn.tableData = getTableDataForAllIndicators(reports, practiceLookup);
+    rtn.trendChartData = getTrendDataForAllIndicators(allReports, practiceLookup, datesForChart);
+    res.json(rtn);
+  } catch (e) {
+    common.logError('[single-practice-api-controller] [exports.data] Error processing data: ', e);
+    common.respondWithError(res, e);
+  }
+};
+
 exports.getPracticeData = async (req, res, next) => {
   const data = await getPracticeData(req, res, next);
   const rtn = {};
@@ -290,7 +444,7 @@ exports.exportPracticeData = async (req, res, next) => {
   // RW - special characters are not correctly displayed in excel.
 
   // After investigation:
-  /* - Notepad++ correctly opens the files - it is just excel that doesn't
+  /* - Notepad+=1 correctly opens the files - it is just excel that doesn't
     - The issue is to do with UTF8 vs UTF8 + BOM
     - Without BOM excel doesn't correctly interpret characters that are outside UTF8
     - Most other text viewers don't need the BOM and just know that if they see a character

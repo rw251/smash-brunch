@@ -1,2 +1,16 @@
-h1 The ccg page
-p= "The currently logged in user is " + global.user.name
+form.form-inline
+  .form-group
+    select#indicatorList.form-control.inline-select.selectpicker(data-live-search="true",data-width="auto",title="Select an indicator")
+      each indicator in indicators
+        option(value=indicator._id, selected=indicator._id===+selectedId)= indicator.short_name
+  .form-group.left-buffer.align-bottom
+    label(for="reportDate",style="display:block") Report date:
+    select#dateList.inline-select(name="reportDate")
+      each date in dates
+        option(value=date._id, selected=date._id===+selectedDateId)= date.value
+  .form-group.left-buffer.align-bottom
+    label(for="comparisonDate",style="display:block") Comparison date:
+    select#dateCompareList.inline-select(name="comparisonDate")
+      each date in dates.slice(1)
+        option(value=date._id, selected=date.value.indexOf('30 day')>-1)= date.value
+#content

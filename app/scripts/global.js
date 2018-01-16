@@ -11,6 +11,9 @@ const hideLoading = () => {
 module.exports = {
   isLoggedIn: false,
   user: false,
+  selectedPracticeId: 0,
+  selectedIndicatorId: 0,
+  selectedDateId: 0,
 
   serverLoad: () => {
     server = true;
