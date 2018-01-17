@@ -6,19 +6,37 @@ exports.getForPracticeOnDate = (practiceId, dateId) =>
 
 exports.getForPractice = practiceId => Report.find({ practiceId }).lean().exec();
 
-exports.getCcgTotals = (dateId) => {
-  Report.aggregate([
-    { $match: { dateId } },
-    { $unwind: '$i' },
-    { $group: { _id: '$i.id', n: { $sum: '$i.n' }, d: { $sum: '$i.d' } } },
-  ]).exec();
-};
+exports.getCcgTotals = dateId => Report.aggregate([
+  { $match: { dateId } },
+  { $unwind: '$i' },
+  { $group: { _id: '$i.id', n: { $sum: '$i.n' }, d: { $sum: '$i.d' } } },
+]).exec();
+
+exports.getCcgAverages = dateId => Report.aggregate([
+  { $match: { dateId } },
+  { $unwind: '$i' },
+  { $group: { _id: '$i.id', n: { $sum: '$i.n' }, d: { $sum: '$i.d' } } },
+]).exec();
 
 exports.getForAllIndicators = dateIds => Report.find({ dateId: { $in: dateIds } })
   .select('-i -multiplePatients')
   .sort('dateId')
   .lean()
   .exec();
+
+exports.getTrendDataForIndicator = (indicatorId, dateIds) =>
+  Report.find({ dateId: { $in: dateIds } })
+    .select({
+      i: { $elemMatch: { id: indicatorId } },
+      _id: 0,
+      practiceId: 1,
+      dateId: 1,
+      'i.id': 1,
+      'i.n': 1,
+      'i.d': 1,
+    }).lean().exec();
+
+exports.getSingleIndicatorData = dateId => Report.find({ dateId }).lean().exec();
 
 exports.getAllIndicatorData = dateId =>
 // TODO - this is a hack to only display ccg info for the first 13 indicators used in the trial

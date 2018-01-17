@@ -1,5 +1,5 @@
-const indicatorController = require('./indicator');
-const utils = require('./utils');
+const indicatorController = require('../indicator');
+const utils = require('../utils');
 /**
  * GET /
  * Home page.

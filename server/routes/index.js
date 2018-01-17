@@ -1,8 +1,9 @@
 const express = require('express');
-const homeController = require('../controllers/home');
-const ccgController = require('../controllers/ccg');
-const evidenceSummaryController = require('../controllers/evidenceSummaries');
-const helpController = require('../controllers/help');
+const homeController = require('../controllers/view/home');
+const ccgController = require('../controllers/view/ccg');
+const indicatorController = require('../controllers/view/indicator');
+const evidenceSummaryController = require('../controllers/view/evidenceSummaries');
+const helpController = require('../controllers/view/help');
 const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const apiController = require('../controllers/api');
@@ -21,6 +22,7 @@ controllers[ctrl.evidence] = evidenceSummaryController;
 controllers[ctrl.help] = helpController;
 controllers[ctrl.user] = userController;
 controllers[ctrl.auth] = authController;
+controllers[ctrl.indicator] = indicatorController;
 
 validateControllers(controllers);
 
@@ -75,9 +77,10 @@ module.exports = function routeIndex() {
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getPracticeData);
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId/export', isAuthenticated, apiController.exportPracticeData);
 
+  router.get('/api/patients/:practiceId/:dateId/:comparisonDateId/:indicatorId/:type', isAuthenticated, apiController.getPatientData);
+
   router.get('/api/indicator/all/summaryfordate/:dateId', isAuthenticated, apiController.getAllIndicatorData);
-  // router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith
-  // /:comparisonDateId', isAuthenticated, apiController.get)
+  router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getSingleIndicatorData);
   // router.get('/auth/google', passport.authenticate('google'));
   // router.get('/auth/google/callback', passport.authenticate('google',
   // { failureRedirect: '/login' }), (req, res) => {

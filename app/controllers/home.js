@@ -20,7 +20,7 @@ const displayBreadcrumbs = () => {
   breadcrumbs.display(bc);
 };
 
-const updateUrlParams = () => {
+const updateUrlParams = (isRedirect) => {
   const queryParams = {};
 
   // selected tab
@@ -32,7 +32,15 @@ const updateUrlParams = () => {
   let queryString = qs.stringify(queryParams);
   if (queryString.length > 0) queryString = `?${queryString}`;
 
-  page.show(`${window.location.pathname}${queryString}`, null, false);
+  if (window.location.search !== queryString) {
+    if (isRedirect) {
+      page.redirect(`${window.location.pathname}${queryString}`);
+      return false;
+    }
+    page.show(`${window.location.pathname}${queryString}`, null, false);
+  }
+
+  return true;
   // sorted by
   // sort direction
 };
@@ -80,8 +88,17 @@ const displayDetails = (done) => {
   } else if (done) done();
 };
 
-const updateUrl = () => {
-  page.show(`/practice/${global.selectedPracticeId}/${global.selectedDateId}`, null, false);
+const updateUrl = (isRedirect) => {
+  // page.show(`/practice/${global.selectedPracticeId}/${global.selectedDateId}`, null, false);
+  const locationShouldBe = `/practice/${global.selectedPracticeId}/${global.selectedDateId}`;
+  if (window.location.pathname !== locationShouldBe) {
+    if (isRedirect) {
+      page.redirect(locationShouldBe);
+      return false;
+    }
+    page.show(locationShouldBe, null, false);
+  }
+  return true;
 };
 
 const updateGlobalValue = prop => (changeEvent) => {
@@ -101,7 +118,8 @@ exports.index = (ctx) => {
   if (ctx.params.id) { global.selectedPracticeId = +ctx.params.id; }
   if (ctx.params.dateId) { global.selectedDateId = +ctx.params.dateId; }
 
-  updateUrl();
+  // if false then redirect so abort this page
+  if (!updateUrl(true)) return;
 
   const query = qs.parse(ctx.querystring);
   if (query.tabId) {
@@ -111,7 +129,7 @@ exports.index = (ctx) => {
     global.singlePracticeChartId = query.chartId;
   }
 
-  updateUrlParams();
+  if (!updateUrlParams(true)) return;
 
   global.serverOrClientLoad()
     .onServer((ready) => {

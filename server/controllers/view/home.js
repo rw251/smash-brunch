@@ -1,6 +1,6 @@
-const practiceController = require('./practice');
-const dateController = require('./date');
-const utils = require('./utils');
+const practiceController = require('../practice');
+const dateController = require('../date');
+const utils = require('../utils');
 
 exports.index = async (req, res, next) => {
   try {

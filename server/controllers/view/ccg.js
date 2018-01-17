@@ -1,6 +1,6 @@
-const indicatorController = require('./indicator');
-const dateController = require('./date');
-const utils = require('./utils');
+const indicatorController = require('../indicator');
+const dateController = require('../date');
+const utils = require('../utils');
 /**
  * GET /
  * Home page.

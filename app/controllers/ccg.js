@@ -1,5 +1,6 @@
 const ccgTemplate = require('../../shared/templates/ccg.jade');
 const ccgContentTemplate = require('../../shared/templates/components/ccgContent.jade');
+const ccgSingleContentTemplate = require('../../shared/templates/components/ccgSingleContent.jade');
 const api = require('./api');
 const defaultController = require('./default');
 const global = require('../scripts/global');
@@ -78,42 +79,45 @@ const displayDetails = (done) => {
       if (done) done();
     });
   } else {
-    api.ccgData(global.selectedIndicatorId, global.selectedDateId, 2618, (err, data) => {
-      data.tabId = global.ccgTabId;
-      data.chartId = global.ccgChartId;
-      const ccgContentHtml = ccgContentTemplate(data);
-      $('#content').html(ccgContentHtml);
-      table = $('#practiceTable').DataTable({
-        searching: false, // we don't want a search box
-        stateSave: true, // let's remember which page/sorting etc
-        paging: false, // always want all indicators
-        scrollY: '50vh',
-        scrollCollapse: true,
-      });
-      $exportButton = $('#export');
-      $('#tableTab').on('shown.bs.tab', () => {
-        table.columns.adjust().draw(false); // ensure headers display correctly on hidden tab
-        $exportButton.show(); // only want export button on table tab
-      });
-      $('#tableTab').on('hidden.bs.tab', () => {
-        $exportButton.hide(); // only want export button on table tab
-      });
-      $('li a[role="tab"]').on('shown.bs.tab', (e) => {
-        global.ccgTabId = $(e.currentTarget).data('id');
-        updateUrlParams();
-      });
-      if (global.ccgChartId) {
-        charts.displaySinglePracticeChart(global.ccgChartId, data);
-      }
-      $('#id_chart')
-        .selectpicker()
-        .on('change', (e) => {
-          global.ccgChartId = $(e.currentTarget).val();
-          charts.displaySinglePracticeChart(global.ccgChartId, data);
+    api.ccgSingleIndicatorData(
+      global.selectedIndicatorId,
+      global.selectedDateId, 2618, (err, data) => {
+        data.tabId = global.ccgTabId;
+        data.chartId = global.ccgChartId;
+        const ccgContentHtml = ccgSingleContentTemplate(data);
+        $('#content').html(ccgContentHtml);
+        table = $('#indicatorTable').DataTable({
+          searching: false, // we don't want a search box
+          stateSave: true, // let's remember which page/sorting etc
+          paging: false, // always want all indicators
+          scrollY: '50vh',
+          scrollCollapse: true,
+        });
+        $exportButton = $('#export');
+        $('#tableTab').on('shown.bs.tab', () => {
+          table.columns.adjust().draw(false); // ensure headers display correctly on hidden tab
+          $exportButton.show(); // only want export button on table tab
+        });
+        $('#tableTab').on('hidden.bs.tab', () => {
+          $exportButton.hide(); // only want export button on table tab
+        });
+        $('li a[role="tab"]').on('shown.bs.tab', (e) => {
+          global.ccgTabId = $(e.currentTarget).data('id');
           updateUrlParams();
         });
-      if (done) done();
-    });
+        if (global.ccgChartId) {
+          charts.displaySinglePracticeChart(global.ccgChartId, data);
+        }
+        $('#id_chart')
+          .selectpicker()
+          .on('change', (e) => {
+            global.ccgChartId = $(e.currentTarget).val();
+            charts.displaySinglePracticeChart(global.ccgChartId, data);
+            updateUrlParams();
+          });
+        if (done) done();
+      }
+    );
   }
 };
 

@@ -1,9 +1,15 @@
 form.form-inline
   .form-group
     select#indicatorList.form-control.inline-select.selectpicker(data-live-search="true",data-width="auto")
-      option(value=0, selected=0===+selectedId) All Indicators
       each indicator in indicators
         option(value=indicator._id, selected=indicator._id===+selectedId)= indicator.short_name
+  .form-group.left-buffer.align-bottom
+    label(for="reportType",style="display:block") Report type:
+    select#typeList.inline-select(name="reportType")
+      option(value='numerator',selected='numerator'===type || !type) Affected patients
+      option(value='resolved',selected='numerator'===type) Successful intervention
+      option(value='existing',selected='numerator'===type) Action pending
+      option(value='new',selected='numerator'===type) New cases
   .form-group.left-buffer.align-bottom
     label(for="reportDate",style="display:block") Report date:
     select#dateList.inline-select(name="reportDate")

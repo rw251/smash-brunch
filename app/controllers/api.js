@@ -58,6 +58,26 @@ exports.user = (email, callback) => {
   });
 };
 
+exports.ccgSingleIndicatorData = (indicatorId, dateId, comparisonDateId, callback) => {
+  if (!global.ccgData) global.ccgData = {};
+  if (!global.ccgData[indicatorId]) global.ccgData[indicatorId] = {};
+  if (!global.ccgData[indicatorId][dateId]) global.ccgData[indicatorId][dateId] = {};
+  if (global.ccgData[indicatorId][dateId][comparisonDateId]) {
+    return callback(null, global.ccgData[indicatorId][dateId][comparisonDateId]);
+  }
+  return $
+    .ajax({
+      url: `/api/indicator/${indicatorId}/summaryfordate/${dateId}/comparedWith/${comparisonDateId}`,
+      success(data) {
+        global.ccgData[indicatorId][dateId][comparisonDateId] = data;
+        return callback(null, data);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};
+
 exports.ccgAllIndicatorData = (dateId, callback) => {
   if (!global.ccgData) global.ccgData = {};
   if (!global.ccgData.all) global.ccgData.all = {};
