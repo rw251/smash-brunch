@@ -101,14 +101,46 @@ exports.practiceData = (practiceId, dateId, comparisonDateId, callback) => {
   if (!global.practiceData) global.practiceData = {};
   if (!global.practiceData[practiceId]) global.practiceData[practiceId] = {};
   if (!global.practiceData[practiceId][dateId]) global.practiceData[practiceId][dateId] = {};
-  if (global.practiceData[practiceId][dateId][comparisonDateId]) {
-    return callback(null, global.practiceData[practiceId][dateId][comparisonDateId]);
+  if (!global.practiceData[practiceId][dateId][comparisonDateId]) {
+    global.practiceData[practiceId][dateId][comparisonDateId] = {};
+  }
+  if (global.practiceData[practiceId][dateId][comparisonDateId].overview) {
+    return callback(null, global.practiceData[practiceId][dateId][comparisonDateId].overview);
   }
   return $
     .ajax({
       url: `/api/practice/${practiceId}/summaryfordate/${dateId}/comparedWith/${comparisonDateId}`,
       success(data) {
-        global.practiceData[practiceId][dateId][comparisonDateId] = data;
+        global.practiceData[practiceId][dateId][comparisonDateId].overview = data;
+        return callback(null, data);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};
+
+exports.patientData = (practiceId, dateId, comparisonDateId, indicatorId, reportType, callback) => {
+  if (!global.practiceData) global.practiceData = {};
+  if (!global.practiceData[practiceId]) global.practiceData[practiceId] = {};
+  if (!global.practiceData[practiceId][dateId]) global.practiceData[practiceId][dateId] = {};
+  if (!global.practiceData[practiceId][dateId][comparisonDateId]) {
+    global.practiceData[practiceId][dateId][comparisonDateId] = {};
+  }
+  if (!global.practiceData[practiceId][dateId][comparisonDateId][indicatorId]) {
+    global.practiceData[practiceId][dateId][comparisonDateId][indicatorId] = {};
+  }
+  if (global.practiceData[practiceId][dateId][comparisonDateId][indicatorId][reportType]) {
+    return callback(
+      null,
+      global.practiceData[practiceId][dateId][comparisonDateId][indicatorId][reportType]
+    );
+  }
+  return $
+    .ajax({
+      url: `/api/patients/${practiceId}/${dateId}/${comparisonDateId}/${indicatorId}/${reportType}`,
+      success(data) {
+        global.practiceData[practiceId][dateId][comparisonDateId][indicatorId][reportType] = data;
         return callback(null, data);
       },
       error(err) {

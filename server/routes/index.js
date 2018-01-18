@@ -77,7 +77,7 @@ module.exports = function routeIndex() {
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getPracticeData);
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId/export', isAuthenticated, apiController.exportPracticeData);
 
-  router.get('/api/patients/:practiceId/:dateId/:comparisonDateId/:indicatorId/:type', isAuthenticated, apiController.getPatientData);
+  router.get('/api/patients/:practiceId/:dateId/:comparisonDateId/:indicatorId/:reportType', isAuthenticated, apiController.getPatientData);
 
   router.get('/api/indicator/all/summaryfordate/:dateId', isAuthenticated, apiController.getAllIndicatorData);
   router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getSingleIndicatorData);

@@ -135,18 +135,22 @@ const getPatientData = async (req, res, next) => {
   const dateId = +req.params.dateId;
   const comparisonDateId = +req.params.comparisonDateId;
   const indicatorId = +req.params.indicatorId;
-  const type = req.params.type || 'numerator';
-  const rtn = { practiceId, dateId, comparisonDateId, indicatorId };
+  const reportType = req.params.reportType || 'numerator';
+  const rtn = { practiceId, dateId, comparisonDateId, indicatorId, reportType };
 
   try {
     rtn.practice = await practiceCtrl.getById(practiceId);
+    const firstReportDate = rtn.practice.first_report_date || new Date(2000, 1, 1);
     rtn.report = await reportCtrl.getForPracticeOnDate(practiceId, dateId);
     const comparisonReport = await reportCtrl.getForPracticeOnDate(practiceId, comparisonDateId);
-    rtn.patientIds = getPatientIds(indicatorId, rtn.report, comparisonReport, type);
+    rtn.patientIds = getPatientIds(indicatorId, rtn.report, comparisonReport, reportType);
     rtn.episodes = await episodeCtrl.getForPatientIds(rtn.patientIds);
     rtn.indicatorLookup = await indicatorCtrl.list();
     rtn.dateLookup = await dateCtrl.list();
     rtn.patientLookup = await patientCtrl.getForPatientIds(rtn.patientIds);
+    rtn.trendDates = rtn.dateLookup.filter(v => new Date(v.date) >= firstReportDate);
+    rtn.trendReports = await reportCtrl.getForPracticeOnDates(practiceId, rtn.trendDates);
+    rtn.indicator = await indicatorCtrl.getById(indicatorId);
   } catch (err) {
     return next(err);
   }
@@ -675,6 +679,249 @@ const getMatchingEpisode = (episodes, date, patientId, indicatorId) => {
   return episode;
 };
 
+const tableDataForNumerator = (indicatorId, reports, dateLookup) => {
+  let i;
+  let currentIndicator;
+  let previousIndicator;
+  let num = 0;
+  let previousNum = 0;
+  let trendValue = 0;
+  let trend = '';
+  let date = '';
+
+  const rtn = [];
+
+  // Ensure reports are ordered in descending date order
+  const sortedReports = reports.sort((a, b) => b.dateId - a.dateId);
+
+  for (i = 0; i < sortedReports.length - 1; i += 1) {
+    currentIndicator = common.getObjectById(indicatorId, sortedReports[i].i);
+    previousIndicator = common.getObjectById(indicatorId, sortedReports[i + 1].i);
+    num = currentIndicator === null ? 0 : currentIndicator.n;
+    previousNum = previousIndicator === null ? 0 : previousIndicator.n;
+    trendValue = num - previousNum;
+    date = common.getDate(sortedReports[i].dateId, dateLookup);
+    if (date === null) throw new Error('Date lookup failed');
+
+    if (trendValue > 0) {
+      trend = 'up-negative';
+    } else if (trendValue < 0) {
+      trend = 'down-positive';
+    } else {
+      trend = 'no-change';
+    }
+
+    rtn.push({
+      date,
+      num,
+      trendValue,
+      trend,
+    });
+  }
+  return rtn;
+};
+
+const tableDataForResolved = (indicatorId, reports, dateLookup) => {
+  let i;
+  let currentIndicator;
+  let previousIndicator;
+  let prePreviousIndicator;
+  let num = 0;
+  let previousNum = 0;
+  let trendValue = 0;
+  let trend = '';
+  let date = '';
+
+  const rtn = [];
+
+  // Ensure reports are ordered in descending date order
+  const sortedReports = reports.sort((a, b) => b.dateId - a.dateId);
+
+  for (i = 0; i < sortedReports.length - 2; i += 1) {
+    currentIndicator = common.getObjectById(indicatorId, sortedReports[i].i);
+    previousIndicator = common.getObjectById(indicatorId, sortedReports[i + 1].i);
+    prePreviousIndicator = common.getObjectById(indicatorId, sortedReports[i + 2].i);
+    num = common.getResolvedCases(
+      currentIndicator === null ? [] : currentIndicator.p,
+      previousIndicator === null ? [] : previousIndicator.p
+    ).length;
+    previousNum = common.getResolvedCases(
+      previousIndicator === null ? [] : previousIndicator.p,
+      prePreviousIndicator === null ? [] : prePreviousIndicator.p
+    ).length;
+    trendValue = num - previousNum;
+    date = common.getDate(sortedReports[i].dateId, dateLookup);
+    if (date === null) throw new Error('Date lookup failed');
+
+    if (trendValue > 0) {
+      trend = 'up-positive';
+    } else if (trendValue < 0) {
+      trend = 'down-negative';
+    } else {
+      trend = 'no-change';
+    }
+
+    rtn.push({
+      date,
+      num,
+      trendValue,
+      trend,
+    });
+  }
+  return rtn;
+};
+
+const tableDataForNew = (indicatorId, reports, dateLookup) => {
+  let i;
+  let currentIndicator;
+  let previousIndicator;
+  let prePreviousIndicator;
+  let num = 0;
+  let previousNum = 0;
+  let trendValue = 0;
+  let trend = '';
+  let date = '';
+
+  const rtn = [];
+
+  // Ensure reports are ordered in descending date order
+  const sortedReports = reports.sort((a, b) => b.dateId - a.dateId);
+
+  for (i = 0; i < sortedReports.length - 2; i += 1) {
+    currentIndicator = common.getObjectById(indicatorId, sortedReports[i].i);
+    previousIndicator = common.getObjectById(indicatorId, sortedReports[i + 1].i);
+    prePreviousIndicator = common.getObjectById(indicatorId, sortedReports[i + 2].i);
+    num = common.getNewCases(
+      currentIndicator === null ? [] : currentIndicator.p,
+      previousIndicator === null ? [] : previousIndicator.p
+    ).length;
+    previousNum = common.getNewCases(
+      previousIndicator === null ? [] : previousIndicator.p,
+      prePreviousIndicator === null ? [] : prePreviousIndicator.p
+    ).length;
+    trendValue = num - previousNum;
+    date = common.getDate(sortedReports[i].dateId, dateLookup);
+    if (date === null) throw new Error('Date lookup failed');
+
+    if (trendValue > 0) {
+      trend = 'up-negative';
+    } else if (trendValue < 0) {
+      trend = 'down-positive';
+    } else {
+      trend = 'no-change';
+    }
+
+    rtn.push({
+      date,
+      num,
+      trendValue,
+      trend,
+    });
+  }
+  return rtn;
+};
+
+const tableDataForExisting = (indicatorId, reports, dateLookup) => {
+  let i;
+  let currentIndicator;
+  let previousIndicator;
+  let prePreviousIndicator;
+  let num = 0;
+  let previousNum = 0;
+  let trendValue = 0;
+  let trend = '';
+  let date = '';
+
+  const rtn = [];
+
+  // Ensure reports are ordered in descending date order
+  const sortedReports = reports.sort((a, b) => b.dateId - a.dateId);
+
+  for (i = 0; i < sortedReports.length - 2; i += 1) {
+    currentIndicator = common.getObjectById(indicatorId, sortedReports[i].i);
+    previousIndicator = common.getObjectById(indicatorId, sortedReports[i + 1].i);
+    prePreviousIndicator = common.getObjectById(indicatorId, sortedReports[i + 2].i);
+    num = common.getExistingCases(
+      currentIndicator === null ? [] : currentIndicator.p,
+      previousIndicator === null ? [] : previousIndicator.p
+    ).length;
+    previousNum = common.getExistingCases(
+      previousIndicator === null ? [] : previousIndicator.p,
+      prePreviousIndicator === null ? [] : prePreviousIndicator.p
+    ).length;
+    trendValue = num - previousNum;
+    date = common.getDate(sortedReports[i].dateId, dateLookup);
+    if (date === null) throw new Error('Date lookup failed');
+
+    if (trendValue > 0) {
+      trend = 'up-negative';
+    } else if (trendValue < 0) {
+      trend = 'down-positive';
+    } else {
+      trend = 'no-change';
+    }
+
+    rtn.push({
+      date,
+      num,
+      trendValue,
+      trend,
+    });
+  }
+  return rtn;
+};
+
+const getTableDataForPatients = (indicatorId, trendReports, trendDates, reportType) => {
+  let rtn = [];
+
+  if (reportType === 'resolved') {
+    rtn = tableDataForResolved(indicatorId, trendReports, trendDates);
+  } else if (reportType === 'existing') {
+    rtn = tableDataForExisting(indicatorId, trendReports, trendDates);
+  } else if (reportType === 'new') {
+    rtn = tableDataForNew(indicatorId, trendReports, trendDates);
+  } else if (reportType === 'numerator') {
+    rtn = tableDataForNumerator(indicatorId, trendReports, trendDates);
+  }
+
+  return rtn;
+};
+
+const getChartDataForPatients = (tableData) => {
+  let i;
+  let r = {};
+  let entry = {};
+
+  const rtn = {
+    cols: [],
+    rows: [],
+  };
+
+  rtn.cols.push({
+    id: 'date',
+    label: 'Date',
+    type: 'date',
+  });
+
+  rtn.cols.push({
+    id: 'value',
+    label: '',
+    type: 'number',
+  });
+
+  for (i = 0; i < tableData.length; i += 1) {
+    entry = tableData[i];
+
+    r = { c: [] };
+    r.c.push({ v: entry.date });
+    r.c.push({ v: entry.num });
+
+    rtn.rows.push(r);
+  }
+
+  return rtn;
+};
+
 const getPatientsData = (
   patientIds, report, practice,
   indicatorLookup, dateLookup,
@@ -814,19 +1061,22 @@ exports.getPatientData = async (req, res, next) => {
   try {
     const { report, patientIds, practice, indicatorLookup, practiceId, dateId } = data;
     const { dateLookup, patientLookup, episodes, comparisonDateId, indicatorId } = data;
+    const { trendReports, trendDates, reportType, indicator } = data;
     rtn.practiceId = practiceId;
     rtn.dateId = dateId;
     rtn.comparisonDateId = comparisonDateId;
     rtn.indicatorId = indicatorId;
+    rtn.indicator = indicator;
     rtn.patients = getPatientsData(
       patientIds, report, practice, indicatorLookup,
       dateLookup, patientLookup, episodes
     );
-    if (req.justTheData) return rtn;
-    return res.json(rtn);
+    rtn.tableData = getTableDataForPatients(indicatorId, trendReports, trendDates, reportType);
+    rtn.chartData = getChartDataForPatients(rtn.tableData);
+    res.json(rtn);
   } catch (e) {
     common.logError('[single-practice-api-controller] [exports.data] Error processing data: ', e);
-    return common.respondWithError(res, e);
+    common.respondWithError(res, e);
   }
 };
 

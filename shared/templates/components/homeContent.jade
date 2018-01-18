@@ -62,16 +62,16 @@ else
               tr.no-priority
                 td(tooltip='{{indicator.long_name}}', tooltip-append-to-body='true')= indicator.short_name
                 td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id)= indicator.num
+                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/numerator')= indicator.num
                 td= indicator.denom
                 td= indicator.avg
                 td= indicator.ccg
                 td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/resolved?tabId=0&chart=table')= indicator.resolved
+                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/resolved')= indicator.resolved
                 td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/existing?tabId=0&chart=table')= indicator.existing
+                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/existing')= indicator.existing
                 td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/new?tabId=0&chart=table')= indicator.new
+                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/new')= indicator.new
                 td= indicator.trendValue
                 td
                   input(type='checkbox', ng-checked='isChecked(indicator.id)', ng-click='handleCheckBoxClick(indicator.id)')

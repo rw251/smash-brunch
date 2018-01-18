@@ -3,83 +3,112 @@ if errorAlert
     alert(type='{{errorAlert.type}}')= errorAlert.msg
 else
   .pull-right
-    button#export.btn.btn-primary(type='button',style='display:none') Export
+    if(+tabId===1)
+      button#toggleChart.btn.btn-primary(type='button')= 'View as ' + (showChart === 'chart' ? 'table' : 'chart')
+    else
+      button#toggleChart.btn.btn-primary(type='button',style='display:none')= 'View as ' + (showChart === 'chart' ? 'table' : 'chart')
   ul.nav.nav-tabs(role='tablist')
     li(class=!tabId || +tabId ===0 ? 'active' : '', role='presentation')
-      a(href='#summary', aria-controls='summary', role='tab', data-toggle='tab', data-id='0') Practice summary
+      a#tableTab(href='#patients', aria-controls='patients', role='tab', data-toggle='tab', data-id='0') Patients
     li(class=+tabId === 1 ? 'active' : '', role='presentation')
-      a#tableTab(href='#table', aria-controls='table', role='tab', data-toggle='tab', data-id='1') Table
+      a#trendTableTab(href='#trend', aria-controls='trend', role='tab', data-toggle='tab', data-id='1') Trend
     li(class=+tabId === 2 ? 'active' : '', role='presentation')
-      a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab', data-id='2') Charts
+      a(href='#information', aria-controls='information', role='tab', data-toggle='tab', data-id='2') Information
   // Tab panes
   .tab-content
-    #summary.tab-pane.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
-      table.top-buffer.table.table-bordered.table-narrow
-        tr
-          th(tooltip='Number of patients in the practice', tooltip-append-to-body='true', tooltip-placement='left') Practice size
-          td= summaryData.practiceSize
-        tr
-          th(tooltip='Number of patients flagged up by at least one of the indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by at least one indicator
-          td= summaryData.totalPatients
-        tr
-          th(tooltip='Number of patients flagged up by 2 or more indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by more than one indicator
-          td
-            a(href='/dashboard/practice/{{dataService.selectedPractice._id}}/patientsMultiple?dateId={{dataService.date._id}}')= summaryData.multiple
-        tr
-          th(tooltip='Out of all patients eligible for each indicator, this is the average proportion of affected patients', tooltip-append-to-body='true', tooltip-placement='left') All indicator average
-          td= summaryData.allIndicatorAverage
-    #table.tab-pane.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
-      .clearfix
-      .top-buffer
-        table#indicatorTable.table.table-bordered.table-striped
+    #patients.tab-pane.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
+      if(patients.length === 0)
+        | No patients found
+      else 
+        table#patientTable.table.table-bordered
           thead
             tr
-              th.pointer(tooltip='{{field.tooltip}}') Indicator
-              th.pointer(tooltip='{{field.tooltip}}') Affected patients
-              th.pointer(tooltip='{{field.tooltip}}') Eligible patients
-              th.pointer(tooltip='{{field.tooltip}}') % of eligible patients affected
-              th.pointer(tooltip='{{field.tooltip}}') CCG Avg (%)
-              th.pointer(tooltip='{{field.tooltip}}') Successful intervention
-              th.pointer(tooltip='{{field.tooltip}}') Action pending
-              th.pointer(tooltip='{{field.tooltip}}') New cases
-              th.pointer(tooltip='{{field.tooltip}}') Trend
-              th.pointer(tooltip='{{field.tooltip}}') Show on top
+              th(tooltip="The patient's NHS number", tooltip-append-to-body='true', tooltip-placement='bottom') NHS number
+              th(tooltip='A list of prescribing safety indicators that the patient is currently affected by', tooltip-append-to-body='true', tooltip-placement='bottom') Indicators breached
+              th(tooltip='The date since which the patient was originally found to be affected by this indicator', tooltip-append-to-body='true', tooltip-placement='bottom') Since
+              th(tooltip='Any notes associated with the patient are displayed here', tooltip-append-to-body='true', tooltip-placement='bottom') Notes
           tbody
-            each indicator in tableData
+            each patient in patients
               tr.no-priority
-                td(tooltip='{{indicator.long_name}}', tooltip-append-to-body='true')= indicator.short_name
+                td(data-patient-id=patient.id)= patient.nhs
                 td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id)= indicator.num
-                td= indicator.denom
-                td= indicator.avg
-                td= indicator.ccg
+                  table.table.table-borderless
+                    tbody
+                      each indicator in patient.indicators
+                        tr
+                          td(tooltip=indicator.long_name, tooltip-append-to-body='true', tooltip-placement='left')= indicator.short_name
                 td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/resolved?tabId=0&chart=table')= indicator.resolved
+                  table.table.table-borderless
+                    tbody
+                      each indicator in patient.indicators
+                        tr
+                          td= indicator.since
                 td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/existing?tabId=0&chart=table')= indicator.existing
-                td
-                  a(href='#!/dashboard/practice/{{dataService.selectedPractice._id}}/indicator/{{indicator.id}}/date/{{dataService.date._id}}/compareWith/{{dataService.comparisonDate._id}}/type/new?tabId=0&chart=table')= indicator.new
-                td= indicator.trendValue
-                td
-                  input(type='checkbox', ng-checked='isChecked(indicator.id)', ng-click='handleCheckBoxClick(indicator.id)')
-    #charts.tab-pane.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel')
-      .top-buffer
-        select#id_chart.selectpicker(data-width="auto",title="Please select a chart to view...")
-          option(value='0', selected=chartId==='0') Proportion of eligible patients affected
-          option(value='1', selected=chartId==='1') Number of affected patients over time
-          option(value='2', selected=chartId==='2') Proportion of eligible patients affected over time
-        .panel.panel-default
-          .panel-body
-            .inline-element.left-buffer.align-bottom.pull-right
-              div
-                label End date:
-              div
-                select
-            .inline-element.align-bottom.pull-right
-              div
-                label Start date:
-              div
-                select
-            .clearfix
-            #singlePracticeChart
+                  if(patient.displayNote)
+                    p= patient.patientNote
+                  if(patient.indicatorNotes)
+                    each note in patient.indicatorNotes
+                      div
+                        p
+                          strong= note.name + ':'
+                        ul
+                          li= note.note
+                  if(patient.displayNote)
+                    p
+                      small
+                        = 'Note last updated by ' + patient.patientNoteUpdatedBy + ' on ' + patient.patientNoteUpdatedLocaleString
+                  if(!patient.displayNote)
+                    button.btn.btn-default(type='button') Add Note
+                  else
+                    button.btn.btn-default(type='button') Edit Note
+                    button.btn.btn-default(type='button') Delete Note
+    #trend.tab-pane.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
+      .clearfix
+        div
+          if(showChart==='chart')
+            div
+              .inline-element.left-buffer.align-bottom
+                div
+                  label Start date:
+                div
+                  select(ng-model='dataService.trendStartDate', ng-options="d.date | date:'d MMMM yyyy' for d in lookupService.currentDates | orderBy:'-date' | filter:trendStartDateFilter", ng-change='trendRangeChanged()')
+              .inline-element.left-buffer.align-bottom
+                div
+                  label End date:
+                div
+                  select(ng-model='dataService.trendEndDate', ng-options="d.date | date:'d MMMM yyyy' for d in lookupService.currentDates | orderBy:'-date' | filter:trendEndDateFilter", ng-change='trendRangeChanged()')
+            #trend-chart
+          else
+            table#trendTable.table.table-bordered
+              thead
+                tr
+                  th(tooltip='Date of the report', tooltip-append-to-body='true', tooltip-placement='bottom') Date
+                  if(reportType==='numerator') 
+                    th(tooltip='The number of patients affected by this indicator', tooltip-append-to-body='true', tooltip-placement='bottom', ng-if="dataService.type === 'numerator'") Affected patients
+                  else if(reportType==='resolved') 
+                    th(tooltip='Patients no longer affected by this indicator since the last comparison date', tooltip-append-to-body='true', tooltip-placement='bottom', ng-if="dataService.type === 'resolved'") Successful intervention
+                  else if(reportType==='existing') 
+                    th(tooltip='Patients who remain affected by this indicator since the last comparison date', tooltip-append-to-body='true', tooltip-placement='bottom', ng-if="dataService.type === 'existing'") Action pending
+                  else if(reportType==='new') 
+                    th(tooltip="Patients affected by this indicator who weren't affected on the last comparison date", tooltip-append-to-body='true', tooltip-placement='bottom', ng-if="dataService.type === 'new'") New cases
+                  th(tooltip='Difference from previous report', tooltip-append-to-body='true', tooltip-placement='bottom') Trend
+              tbody
+                each row in tableData
+                  tr
+                    td= row.date
+                    td= row.num
+                    td
+                      if(row.trend==='up-positive')
+                        img(src='/img/up-green.png')
+                      else if(row.trend==='down-positive')
+                        img(src='/img/down-green.png')
+                      else if(row.trend==='up-negative')
+                        img(src='/img/up-red.png')
+                      else if(row.trend==='down-negative')
+                        img(src='/img/down-red.png')
+                      else
+                        img(ng-switch-default='', src='/img/no-change.png')
+                      = row.trendValue
+    #information.tab-pane.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel', style='height:60vh;overflow-y:auto;border-left:1px solid #ddd;border-right:1px solid #ddd;border-bottom:1px solid #ddd;')
+      != indicator.info
 
