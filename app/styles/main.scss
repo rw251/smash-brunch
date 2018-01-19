@@ -33,6 +33,12 @@ body {
   text-align: center;
 }
 
+.inline-loading-shade {
+  display: none;
+  position: absolute;
+  top: 150px;
+}
+
 /* COMMON.CSS */
 .page-header {
   padding-bottom: 0 !important;
@@ -450,13 +456,16 @@ Prominent hyperlinks
 .table > tbody > tr > td.prominentLink:hover {
   background-color: yellow;
   cursor: pointer;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding-left: 7px;
 }
 
 .table > tbody > tr > td.prominentLink:hover a {
   text-decoration: underline;
 }
 
-a.prominentLink {
+td.prominentLink a {
   color: blue;
   font-weight: bold;
 }
@@ -621,4 +630,10 @@ $navbarToggle:600;
 
 .practice-summary-value {
   float: right;
+}
+
+.tab-borders {
+  border-left:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+  border-right:1px solid #ddd;
 }

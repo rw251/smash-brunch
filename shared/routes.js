@@ -4,6 +4,7 @@ const routes = [
   { url: '/practice', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:id', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:id/:dateId', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
+  { url: '/practice/:practiceId/multiple/on/:dateId', type: 'get', needsAuth: true, controller: ctrl.multiple, method: 'index' },
   { url: '/practice/:id/:dateId/:comparisonDateId', type: 'get', needsAuth: true, controller: ctrl.home, method: 'index' },
   { url: '/practice/:practiceId/:dateId/:comparisonDateId/:indicatorId/:reportType', type: 'get', needsAuth: true, controller: ctrl.indicator, method: 'index' },
   { url: '/ccg', type: 'get', needsAuth: true, controller: ctrl.ccg, method: 'index' },

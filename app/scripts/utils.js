@@ -21,7 +21,7 @@ exports.showLoadingShade = (ctx, next) => {
   global.setShowLoading(true);
   setTimeout(() => {
     if (global.getShowLoading()) {
-      $('.loading-shade').show();
+      global.getLoadingElement().show();
     }
   }, 500);
   setTimeout(() => {

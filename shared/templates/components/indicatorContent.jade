@@ -16,11 +16,11 @@ else
       a(href='#information', aria-controls='information', role='tab', data-toggle='tab', data-id='2') Information
   // Tab panes
   .tab-content
-    #patients.tab-pane.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
+    #patients.tab-pane.tab-borders.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
       if(patients.length === 0)
         | No patients found
       else 
-        table#patientTable.table.table-bordered
+        table#patientTable.table
           thead
             tr
               th(tooltip="The patient's NHS number", tooltip-append-to-body='true', tooltip-placement='bottom') NHS number
@@ -62,7 +62,7 @@ else
                   else
                     button.btn.btn-default(type='button') Edit Note
                     button.btn.btn-default(type='button') Delete Note
-    #trend.tab-pane.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
+    #trend.tab-pane.tab-borders.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
       .clearfix
         div
           if(showChart==='chart')
@@ -79,7 +79,7 @@ else
                   select(ng-model='dataService.trendEndDate', ng-options="d.date | date:'d MMMM yyyy' for d in lookupService.currentDates | orderBy:'-date' | filter:trendEndDateFilter", ng-change='trendRangeChanged()')
             #trend-chart
           else
-            table#trendTable.table.table-bordered
+            table#trendTable.table
               thead
                 tr
                   th(tooltip='Date of the report', tooltip-append-to-body='true', tooltip-placement='bottom') Date
@@ -109,6 +109,6 @@ else
                       else
                         img(ng-switch-default='', src='/img/no-change.png')
                       = row.trendValue
-    #information.tab-pane.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel', style='height:60vh;overflow-y:auto;border-left:1px solid #ddd;border-right:1px solid #ddd;border-bottom:1px solid #ddd;')
+    #information.tab-pane.tab-borders.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel', style='height:60vh;overflow-y:auto;')
       != indicator.info
 

@@ -2,10 +2,12 @@ const $ = require('jquery');
 
 let server = false;
 let shouldShowLoading = false;
+let isGlobalLoadingIndicator = true;
 
 const hideLoading = () => {
   shouldShowLoading = false;
   $('.loading-shade').fadeOut();
+  $('.inline-loading-shade').fadeOut();
 };
 
 module.exports = {
@@ -23,11 +25,17 @@ module.exports = {
     server = false;
   },
 
+  setIsGlobal: (val) => {
+    isGlobalLoadingIndicator = val;
+  },
+
   setShowLoading: (val) => {
     shouldShowLoading = val;
   },
 
   getShowLoading: () => shouldShowLoading,
+
+  getLoadingElement: () => (isGlobalLoadingIndicator ? $('.loading-shade') : $('.inline-loading-shade')),
 
   serverOrClientLoad: () => {
     const loadObject = {

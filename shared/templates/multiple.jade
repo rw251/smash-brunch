@@ -1,0 +1,9 @@
+form.form-inline
+  .form-group.left-buffer.align-bottom
+    label(for="reportDate",style="display:block") Report date:
+    select#dateList.inline-select(name="reportDate")
+      each date in dates
+        option(value=date._id, selected=date._id===+selectedDateId)= date.value
+.inline-loading-shade
+  i.fa.fa-cog.fa-spin.fa-3x.fa-fw(style='margin-top: 20px')
+#content

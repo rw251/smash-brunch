@@ -1,6 +1,7 @@
 const page = require('page');
 const homeController = require('../controllers/home');
 const indicatorController = require('../controllers/indicator');
+const multipleController = require('../controllers/multiple');
 const ccgController = require('../controllers/ccg');
 const indicatorsController = require('../controllers/indicators');
 const helpController = require('../controllers/help');
@@ -20,6 +21,7 @@ controllers[ctrl.help] = helpController;
 controllers[ctrl.user] = userController;
 controllers[ctrl.auth] = authController;
 controllers[ctrl.indicator] = indicatorController;
+controllers[ctrl.multiple] = multipleController;
 
 validateControllers(controllers);
 

@@ -157,6 +157,25 @@ const getPatientData = async (req, res, next) => {
   return rtn;
 };
 
+const getMultiplePatientData = async (req, res, next) => {
+  const practiceId = +req.params.practiceId;
+  const dateId = +req.params.dateId;
+  const rtn = { practiceId, dateId };
+
+  try {
+    rtn.practice = await practiceCtrl.getById(practiceId);
+    rtn.report = await reportCtrl.getForPracticeOnDate(practiceId, dateId);
+    rtn.patientIds = rtn.report.multiplePatients;
+    rtn.episodes = await episodeCtrl.getForPatientIds(rtn.patientIds);
+    rtn.indicatorLookup = await indicatorCtrl.list();
+    rtn.dateLookup = await dateCtrl.list();
+    rtn.patientLookup = await patientCtrl.getForPatientIds(rtn.patientIds);
+  } catch (err) {
+    return next(err);
+  }
+  return rtn;
+};
+
 const getSummaryData = (report, practice) => {
   const summaryData = {};
 
@@ -1073,6 +1092,26 @@ exports.getPatientData = async (req, res, next) => {
     );
     rtn.tableData = getTableDataForPatients(indicatorId, trendReports, trendDates, reportType);
     rtn.chartData = getChartDataForPatients(rtn.tableData);
+    res.json(rtn);
+  } catch (e) {
+    common.logError('[single-practice-api-controller] [exports.data] Error processing data: ', e);
+    common.respondWithError(res, e);
+  }
+};
+
+exports.getMultiplePatientData = async (req, res, next) => {
+  const data = await getMultiplePatientData(req, res, next);
+  const rtn = {};
+
+  try {
+    const { report, patientIds, practice, indicatorLookup, practiceId, dateId } = data;
+    const { dateLookup, patientLookup, episodes } = data;
+    rtn.practiceId = practiceId;
+    rtn.dateId = dateId;
+    rtn.patients = getPatientsData(
+      patientIds, report, practice, indicatorLookup,
+      dateLookup, patientLookup, episodes
+    );
     res.json(rtn);
   } catch (e) {
     common.logError('[single-practice-api-controller] [exports.data] Error processing data: ', e);

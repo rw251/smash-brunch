@@ -1,0 +1,55 @@
+if errorAlert
+  .top-buffer
+    alert(type='{{errorAlert.type}}')= errorAlert.msg
+else
+  ul.nav.nav-tabs(role='tablist')
+    li.active(role='presentation')
+      a#tableTab(href='#patients', aria-controls='patients', role='tab', data-toggle='tab', data-id='0') Patients
+  // Tab panes
+  .tab-content
+    #patients.tab-pane.tab-borders.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
+      if(patients.length === 0)
+        | No patients found
+      else 
+        table#patientTable.table
+          thead
+            tr
+              th(tooltip="The patient's NHS number", tooltip-append-to-body='true', tooltip-placement='bottom') NHS number
+              th(tooltip='A list of prescribing safety indicators that the patient is currently affected by', tooltip-append-to-body='true', tooltip-placement='bottom') Indicators breached
+              th(tooltip='The date since which the patient was originally found to be affected by this indicator', tooltip-append-to-body='true', tooltip-placement='bottom') Since
+              th(tooltip='Any notes associated with the patient are displayed here', tooltip-append-to-body='true', tooltip-placement='bottom') Notes
+          tbody
+            each patient in patients
+              tr.no-priority
+                td(data-patient-id=patient.id)= patient.nhs
+                td
+                  table.table.table-borderless
+                    tbody
+                      each indicator in patient.indicators
+                        tr
+                          td(tooltip=indicator.long_name, tooltip-append-to-body='true', tooltip-placement='left')= indicator.short_name
+                td
+                  table.table.table-borderless
+                    tbody
+                      each indicator in patient.indicators
+                        tr
+                          td= indicator.since
+                td
+                  if(patient.displayNote)
+                    p= patient.patientNote
+                  if(patient.indicatorNotes)
+                    each note in patient.indicatorNotes
+                      div
+                        p
+                          strong= note.name + ':'
+                        ul
+                          li= note.note
+                  if(patient.displayNote)
+                    p
+                      small
+                        = 'Note last updated by ' + patient.patientNoteUpdatedBy + ' on ' + patient.patientNoteUpdatedLocaleString
+                  if(!patient.displayNote)
+                    button.btn.btn-default(type='button') Add Note
+                  else
+                    button.btn.btn-default(type='button') Edit Note
+                    button.btn.btn-default(type='button') Delete Note

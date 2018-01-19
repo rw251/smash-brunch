@@ -2,6 +2,7 @@ const express = require('express');
 const homeController = require('../controllers/view/home');
 const ccgController = require('../controllers/view/ccg');
 const indicatorController = require('../controllers/view/indicator');
+const multipleController = require('../controllers/view/multiple');
 const evidenceSummaryController = require('../controllers/view/evidenceSummaries');
 const helpController = require('../controllers/view/help');
 const userController = require('../controllers/user');
@@ -23,6 +24,7 @@ controllers[ctrl.help] = helpController;
 controllers[ctrl.user] = userController;
 controllers[ctrl.auth] = authController;
 controllers[ctrl.indicator] = indicatorController;
+controllers[ctrl.multiple] = multipleController;
 
 validateControllers(controllers);
 
@@ -78,6 +80,7 @@ module.exports = function routeIndex() {
   router.get('/api/practice/:practiceId/summaryfordate/:dateId/comparedWith/:comparisonDateId/export', isAuthenticated, apiController.exportPracticeData);
 
   router.get('/api/patients/:practiceId/:dateId/:comparisonDateId/:indicatorId/:reportType', isAuthenticated, apiController.getPatientData);
+  router.get('/api/patients/:practiceId/multiple/on/:dateId', isAuthenticated, apiController.getMultiplePatientData);
 
   router.get('/api/indicator/all/summaryfordate/:dateId', isAuthenticated, apiController.getAllIndicatorData);
   router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getSingleIndicatorData);

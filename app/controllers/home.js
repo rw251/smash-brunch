@@ -83,6 +83,10 @@ const displayDetails = (done) => {
           charts.displaySinglePracticeChart(global.singlePracticeChartId, data);
           updateUrlParams();
         });
+      $('[data-toggle="tooltip"]').tooltip();
+      $('td.prominentLink').off('click').on('click', (e) => {
+        page(e.currentTarget.firstChild.pathname, null, false);
+      });
       if (done) done();
     });
   } else if (done) done();
@@ -101,13 +105,18 @@ const updateUrl = (isRedirect) => {
   return true;
 };
 
+const navigate = () => {
+  page.show(`/practice/${global.selectedPracticeId}/${global.selectedDateId}`, null, true);
+};
+
 const updateGlobalValue = prop => (changeEvent) => {
   global[prop] = +$(changeEvent.currentTarget).val();
-  updateUrl();
-  displayDetails();
+  navigate();
+  // displayDetails();
 };
 
 const wireUpIndex = (done) => {
+  $('.tooltip').tooltip('hide');
   $('.selectpicker').selectpicker();
   $('#practiceList').on('change', updateGlobalValue('selectedPracticeId'));
   $('#dateList').on('change', updateGlobalValue('selectedDateId'));
@@ -147,6 +156,7 @@ exports.index = (ctx) => {
             selectedDateId: global.selectedDateId,
             breadcrumbs: [{ label: 'Single Practice' }],
           });
+          global.setIsGlobal(false);
           wireUpIndex(ready);
         });
       });

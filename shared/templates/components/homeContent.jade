@@ -26,56 +26,73 @@ else
       a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab', data-id='2') Charts
   // Tab panes
   .tab-content
-    #summary.tab-pane.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
-      table.top-buffer.table.table-bordered.table-narrow
-        tr
-          th(tooltip='Number of patients in the practice', tooltip-append-to-body='true', tooltip-placement='left') Practice size
-          td= summaryData.practiceSize
-        tr
-          th(tooltip='Number of patients flagged up by at least one of the indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by at least one indicator
-          td= summaryData.totalPatients
-        tr
-          th(tooltip='Number of patients flagged up by 2 or more indicators', tooltip-append-to-body='true', tooltip-placement='left') Patients affected by more than one indicator
-          td
-            a(href='/dashboard/practice/{{dataService.selectedPractice._id}}/patientsMultiple?dateId={{dataService.date._id}}')= summaryData.multiple
-        tr
-          th(tooltip='Out of all patients eligible for each indicator, this is the average proportion of affected patients', tooltip-append-to-body='true', tooltip-placement='left') All indicator average
-          td= summaryData.allIndicatorAverage
-    #table.tab-pane.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
+    #summary.tab-pane.tab-borders.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
+      table.table.table-narrow
+        thead
+          tr
+            th(title='Number of patients in the practice',data-toggle='tooltip',data-container='body',data-placement='left',style='border-bottom-width:1px') Practice size
+            td= summaryData.practiceSize
+        tbody
+          tr
+            th(title='Number of patients flagged up by at least one of the indicators',data-toggle='tooltip',data-container='body',data-placement='left') Patients affected by at least one indicator
+            td= summaryData.totalPatients
+          tr
+            th(title='Number of patients flagged up by 2 or more indicators',data-toggle='tooltip',data-container='body',data-placement='left') Patients affected by more than one indicator
+            if(summaryData.multiple > 0)
+              td.prominentLink(title='Click to view patients',data-toggle='tooltip',data-container='body',data-placement='left')
+                a(href='/practice/' + practiceId + '/multiple/on/' + dateId)= summaryData.multiple
+            else
+              td 0
+          tr
+            th(title='Out of all patients eligible for each indicator, this is the average proportion of affected patients',data-toggle='tooltip',data-container='body',data-placement='left') All indicator average
+            td= summaryData.allIndicatorAverage
+    #table.tab-pane.tab-borders.fade(class=+tabId === 1 ? 'active in' : '', role='tabpanel')
       .clearfix
       .top-buffer
-        table#indicatorTable.table.table-bordered.table-striped
+        table#indicatorTable.table.table-striped
           thead
             tr
-              th.pointer(tooltip='{{field.tooltip}}') Indicator
-              th.pointer(tooltip='{{field.tooltip}}') Affected patients
-              th.pointer(tooltip='{{field.tooltip}}') Eligible patients
-              th.pointer(tooltip='{{field.tooltip}}') % of eligible patients affected
-              th.pointer(tooltip='{{field.tooltip}}') CCG Avg (%)
-              th.pointer(tooltip='{{field.tooltip}}') Successful intervention
-              th.pointer(tooltip='{{field.tooltip}}') Action pending
-              th.pointer(tooltip='{{field.tooltip}}') New cases
-              th.pointer(tooltip='{{field.tooltip}}') Trend
-              th.pointer(tooltip='{{field.tooltip}}') Show on top
+              th.pointer(title='The patient safety indicator name',data-toggle='tooltip',data-container='body',data-placement='top') Indicator
+              th.pointer(title='The number of patients affected by this indicator for this practice',data-toggle='tooltip',data-container='body',data-placement='top') Affected patients
+              th.pointer(title='The population of patients from this practice that this indicator could affect',data-toggle='tooltip',data-container='body',data-placement='top') Eligible patients
+              th.pointer(title='Proportion of the population in focus that are affected by this indicator for this practice',data-toggle='tooltip',data-container='body',data-placement='top') % of eligible patients affected
+              th.pointer(title='Proportion of the population in focus that are affected by this indicator across all practices in the local CCG',data-toggle='tooltip',data-container='body',data-placement='top') CCG Avg (%)
+              th.pointer(title='Patients no longer affected by this indicator since the last comparison date',data-toggle='tooltip',data-container='body',data-placement='top') Successful intervention
+              th.pointer(title='Patients who remain affected by this indicator since the last comparison date',data-toggle='tooltip',data-container='body',data-placement='top') Action pending
+              th.pointer(title='Patients affected by this indicator who weren\'t affected on the last comparison date',data-toggle='tooltip',data-container='body',data-placement='top') New cases
+              th.pointer(title='Difference in the number of affected patients between last comparison date and current',data-toggle='tooltip',data-container='body',data-placement='top') Trend
+              th.pointer(title='Keeps this indicator on top row of the table even when you sort the columns',data-toggle='tooltip',data-container='body',data-placement='top') Show on top
           tbody
             each indicator in tableData
               tr.no-priority
-                td(tooltip='{{indicator.long_name}}', tooltip-append-to-body='true')= indicator.short_name
-                td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/numerator')= indicator.num
+                td(title=indicator.long_name,data-toggle='tooltip',data-container='body',data-placement='top')= indicator.short_name
+                if(indicator.num > 0)
+                  td.prominentLink(title='Click to view patients',data-toggle='tooltip',data-container='body',data-placement='left')
+                    a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/numerator')= indicator.num
+                else
+                  td 0
                 td= indicator.denom
                 td= indicator.avg
                 td= indicator.ccg
-                td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/resolved')= indicator.resolved
-                td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/existing')= indicator.existing
-                td
-                  a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/new')= indicator.new
+                if(indicator.resolved > 0)
+                  td.prominentLink(title='Click to view patients',data-toggle='tooltip',data-container='body',data-placement='left')
+                    a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/resolved')= indicator.resolved
+                else
+                  td 0
+                if(indicator.existing > 0)
+                  td.prominentLink(title='Click to view patients',data-toggle='tooltip',data-container='body',data-placement='left')
+                    a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/existing')= indicator.existing
+                else
+                  td 0
+                if(indicator.new > 0)
+                  td.prominentLink(title='Click to view patients',data-toggle='tooltip',data-container='body',data-placement='left')
+                    a(href='/practice/' + practiceId + '/' + dateId + '/' + comparisonDateId + '/' + indicator.id + '/new')= indicator.new
+                else
+                  td 0
                 td= indicator.trendValue
                 td
                   input(type='checkbox', ng-checked='isChecked(indicator.id)', ng-click='handleCheckBoxClick(indicator.id)')
-    #charts.tab-pane.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel')
+    #charts.tab-pane.tab-borders.fade(class=+tabId === 2 ? 'active in' : '', role='tabpanel')
       .top-buffer
         select#id_chart.selectpicker(data-width="auto",title="Please select a chart to view...")
           option(value='0', selected=chartId==='0') Proportion of eligible patients affected

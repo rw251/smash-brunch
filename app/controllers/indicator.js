@@ -97,13 +97,18 @@ const updateUrl = () => {
   if (window.location.pathname !== locationShouldBe) { page.redirect(locationShouldBe); }
 };
 
+const navigate = () => {
+  page.show(`/practice/${global.selectedPracticeId}/${global.selectedDateId}/${global.selectedComparisonDateId}/${global.selectedIndicatorId}/${global.selectedReportType}`, null, true);
+};
+
 const updateGlobalValue = prop => (changeEvent) => {
   global[prop] = +$(changeEvent.currentTarget).val();
-  updateUrl();
-  displayDetails();
+  navigate();
+  // displayDetails();
 };
 
 const wireUpIndex = (done) => {
+  $('.tooltip').tooltip('hide');
   $('.selectpicker').selectpicker();
   $('#indicatorList').on('change', updateGlobalValue('selectedIndicatorId'));
   $('#dateList').on('change', updateGlobalValue('selectedDateId'));

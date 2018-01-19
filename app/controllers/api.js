@@ -148,3 +148,23 @@ exports.patientData = (practiceId, dateId, comparisonDateId, indicatorId, report
       },
     });
 };
+
+exports.patientMultipleData = (practiceId, dateId, callback) => {
+  if (!global.practiceData) global.practiceData = {};
+  if (!global.practiceData[practiceId]) global.practiceData[practiceId] = {};
+  if (!global.practiceData[practiceId][dateId]) global.practiceData[practiceId][dateId] = {};
+  if (global.practiceData[practiceId][dateId].multiple) {
+    return callback(null, global.practiceData[practiceId][dateId].multiple);
+  }
+  return $
+    .ajax({
+      url: `/api/patients/${practiceId}/multiple/on/${dateId}`,
+      success(data) {
+        global.practiceData[practiceId][dateId].multiple = data;
+        return callback(null, data);
+      },
+      error(err) {
+        return callback(err);
+      },
+    });
+};

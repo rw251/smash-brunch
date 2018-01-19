@@ -16,4 +16,6 @@ form.form-inline
     select#dateCompareList.inline-select(name="comparisonDate")
       each date in dates.slice(1)
         option(value=date._id, selected=date.value.indexOf('30 day')>-1)= date.value
+.inline-loading-shade
+  i.fa.fa-cog.fa-spin.fa-3x.fa-fw(style='margin-top: 20px')
 #content
