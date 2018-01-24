@@ -79,6 +79,7 @@ const numberTrendChartData = (trendData) => {
 };
 
 exports.displaySinglePracticeChart = (id, data) => {
+  $('#chartPanel').show();
   switch (+id) {
     case 1:
       singlePracticeTrend('#singlePracticeChart', numberTrendChartData(data.trendChartData.num), 'Number of affected patients');
