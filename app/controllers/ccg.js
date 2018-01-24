@@ -48,6 +48,7 @@ const displayDetails = (done) => {
       const ccgContentHtml = ccgContentTemplate(data);
       $('#content').html(ccgContentHtml);
       table = $('#indicatorTable').DataTable({
+        info: false, // we don't want showing 1 to n of n
         searching: false, // we don't want a search box
         stateSave: true, // let's remember which page/sorting etc
         paging: false, // always want all indicators
@@ -87,6 +88,7 @@ const displayDetails = (done) => {
         const ccgContentHtml = ccgSingleContentTemplate(data);
         $('#content').html(ccgContentHtml);
         table = $('#indicatorTable').DataTable({
+          info: false, // we don't want showing 1 to n of n
           searching: false, // we don't want a search box
           stateSave: true, // let's remember which page/sorting etc
           paging: false, // always want all indicators

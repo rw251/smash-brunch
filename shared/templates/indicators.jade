@@ -4,7 +4,7 @@
       each indicator in indicators
         option(value=indicator._id, selected=indicator._id===+selectedId)= indicator.short_name
 hr
-#info
+#info(style='height:70vh;overflow-y:auto;')
   if(selectedId && selectedId>0 && indicators.length>selectedId)
     != indicators[selectedId].info
   else

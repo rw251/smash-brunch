@@ -23,6 +23,7 @@ const displayDetails = (done) => {
     const multipleContentHtml = multipleContentTemplate(data);
     $('#content').html(multipleContentHtml);
     $('#patientTable').DataTable({
+      info: false, // we don't want showing 1 to n of n
       searching: false, // we don't want a search box
       stateSave: true, // let's remember which page/sorting etc
       paging: false, // always want all indicators
