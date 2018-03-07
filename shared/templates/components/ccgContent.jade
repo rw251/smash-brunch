@@ -6,9 +6,9 @@ else
     button#export.btn.btn-primary(type='button',style='display:none') Export
   ul.nav.nav-tabs(role='tablist')
     li(class=!tabId || +tabId ===0 ? 'active' : '', role='presentation')
-      a#tableTab(href='#table', aria-controls='table', role='tab', data-toggle='tab', data-id='1') Table
+      a#tableTab(href='#table', aria-controls='table', role='tab', data-toggle='tab', data-id='0') Table
     li(class=+tabId === 1 ? 'active' : '', role='presentation')
-      a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab', data-id='2') Charts
+      a(href='#charts', aria-controls='charts', role='tab', data-toggle='tab', data-id='1') Charts
   // Tab panes
   .tab-content
     #table.tab-pane.tab-borders.fade(class=!tabId || +tabId ===0  ? 'active in' : '', role='tabpanel')
@@ -41,18 +41,5 @@ else
           option(value='0', selected=chartId==='0') Proportion of eligible patients affected
           option(value='1', selected=chartId==='1') Number of affected patients over time
           option(value='2', selected=chartId==='2') Proportion of eligible patients affected over time
-      #chartPanel(style=chartId ? '' : 'display:none')
-        .panel-body
-          .inline-element.left-buffer.align-bottom.pull-right
-            div
-              label End date:
-            div
-              select
-          .inline-element.align-bottom.pull-right
-            div
-              label Start date:
-            div
-              select
-          .clearfix
-          #singlePracticeChart
+      #chartPanel
 

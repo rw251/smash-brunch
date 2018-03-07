@@ -77,6 +77,14 @@ const displayDetails = (done) => {
           charts.displaySinglePracticeChart(global.ccgChartId, data);
           updateUrlParams();
         });
+
+      // wire up chart panel
+      $('#chartPanel').on('change', 'select', () => {
+        data.startDate = $('#startDate').val();
+        data.endDate = $('#endDate').val();
+        charts.displaySinglePracticeChart(global.ccgChartId, data);
+      });
+
       if (done) done();
     });
   } else {
@@ -117,6 +125,14 @@ const displayDetails = (done) => {
             charts.displaySinglePracticeChart(global.ccgChartId, data);
             updateUrlParams();
           });
+
+        // wire up chart panel
+        $('#chartPanel').on('change', 'select', () => {
+          data.startDate = $('#startDate').val();
+          data.endDate = $('#endDate').val();
+          charts.displaySinglePracticeChart(global.ccgChartId, data);
+        });
+
         if (done) done();
       }
     );

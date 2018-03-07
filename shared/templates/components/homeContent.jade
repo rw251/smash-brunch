@@ -98,18 +98,6 @@ else
           option(value='0', selected=chartId==='0') Proportion of eligible patients affected
           option(value='1', selected=chartId==='1') Number of affected patients over time
           option(value='2', selected=chartId==='2') Proportion of eligible patients affected over time
-      #chartPanel(style=chartId ? '' : 'display:none')
-        .panel-body
-          .inline-element.left-buffer.align-bottom.pull-right
-            div
-              label End date:
-            div
-              select
-          .inline-element.align-bottom.pull-right
-            div
-              label Start date:
-            div
-              select
-          .clearfix
-          #singlePracticeChart
+      #chartPanel
+      //- (style=chartId ? '' : 'display:none')
 

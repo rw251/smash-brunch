@@ -1,0 +1,18 @@
+.panel-body
+  if(startDates && endDates)
+    .inline-element.left-buffer.align-bottom.pull-right
+      div
+        label End date:
+      div
+        select#endDate
+          each date,i in endDates
+            option(value=date,selected=endDate ? date === endDate : i===0)= date
+    .inline-element.align-bottom.pull-right
+      div
+        label Start date:
+      div
+        select#startDate
+          each date,i in startDates
+            option(value=date,selected=startDate ? date === startDate : i===startDates.length-1)= date
+    .clearfix
+  #chart

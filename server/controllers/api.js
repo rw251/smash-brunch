@@ -54,10 +54,9 @@ const getPracticeData = async (req, res, next) => {
 
     const firstReportDate = rtn.practice.first_report_date || new Date(2000, 1, 1);
 
-    // rtn.datesForChart = await dateCtrl.getDatesForCharts(firstReportDate);
     rtn.dateLookup = await dateCtrl.list();
-    rtn.datesForChart = rtn.dateLookup.filter(v => new Date(v.date) >= firstReportDate);
-    rtn.allReports = await reportCtrl.getForPractice(practiceId);
+    rtn.datesForChart = rtn.dateLookup.filter((v,i) => new Date(v.date) >= firstReportDate && (i===0 || new Date(v.date).getDate()===1));
+    rtn.allReports = await reportCtrl.getForPracticeOnDates(practiceId, rtn.datesForChart.map(x => x._id));
     rtn.ccgTotals = await reportCtrl.getCcgTotals(dateId);
     rtn.indicatorLookup = await indicatorCtrl.list();
     rtn.practiceLookup = await practiceCtrl.list();
@@ -75,7 +74,7 @@ const getAllIndicatorData = async (req, res, next) => {
     rtn.reports = await reportCtrl.getAllIndicatorData(dateId);
 
     rtn.dateLookup = await dateCtrl.list();
-    rtn.datesForChart = rtn.dateLookup; // .filter(v => new Date(v.date) >= firstReportDate);
+    rtn.datesForChart = rtn.dateLookup.filter((v,i) => i===0 || new Date(v.date).getDate()===1);
 
     rtn.allReports = await reportCtrl.getForAllIndicators(rtn.datesForChart.map(x => x._id));
     rtn.ccgTotals = await reportCtrl.getCcgTotals(dateId);
@@ -99,7 +98,7 @@ const getSingleIndicatorData = async (req, res, next) => {
     rtn.practiceLookup = await practiceCtrl.list();
     rtn.dateLookup = await dateCtrl.list();
     rtn.ccgAverages = await reportCtrl.getCcgAverages(dateId);
-    rtn.datesForChart = rtn.dateLookup;
+    rtn.datesForChart = rtn.dateLookup.filter((v,i) => i===0 || new Date(v.date).getDate()===1);
     rtn.trends = await reportCtrl.getTrendDataForIndicator(
       indicatorId,
       rtn.datesForChart.map(x => x._id)

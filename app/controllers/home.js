@@ -88,6 +88,14 @@ const displayDetails = (done) => {
       $('td.prominentLink').off('click').on('click', (e) => {
         page(e.currentTarget.firstChild.pathname, null, false);
       });
+
+      // wire up chart panel
+      $('#chartPanel').on('change', 'select', () => {
+        data.startDate = $('#startDate').val();
+        data.endDate = $('#endDate').val();
+        charts.displaySinglePracticeChart(global.singlePracticeChartId, data);
+      });
+
       if (done) done();
     });
   } else if (done) done();
