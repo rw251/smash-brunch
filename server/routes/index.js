@@ -9,9 +9,7 @@ const userController = require('../controllers/user');
 const authController = require('../controllers/auth');
 const apiController = require('../controllers/api');
 const sharedRoutes = require('../../shared/routes');
-const cors = require('cors');
 const ctrl = require('../../shared/controllers');
-// const passport = require('passport');
 const validateControllers = require('../../shared/validate');
 
 require('../passport/index');
@@ -61,13 +59,6 @@ module.exports = function routeIndex() {
     router[route.type](route.url, ...middleware);
   });
 
-  router.get('/cookie/:cookie', cors({ origin: true, credentials: true }), (req, res) => {
-    res.cookie('sid', req.params.cookie).send({ ta: 'very much' });
-  });
-  router.get('/resetcookie', cors({ origin: true, credentials: true }), (req, res) => {
-    res.clearCookie('sid').send({ all: 'done' });
-  });
-
   // api methods for returning JSON data to populate some views
   router.get('/api/users', isAuthenticated, isAdmin, userController.listJSON);
   router.get('/api/users/:email', isAuthenticated, isAdmin, userController.getJSON);
@@ -84,16 +75,6 @@ module.exports = function routeIndex() {
 
   router.get('/api/indicator/all/summaryfordate/:dateId', isAuthenticated, apiController.getAllIndicatorData);
   router.get('/api/indicator/:indicatorId/summaryfordate/:dateId/comparedWith/:comparisonDateId', isAuthenticated, apiController.getSingleIndicatorData);
-  // router.get('/auth/google', passport.authenticate('google'));
-  // router.get('/auth/google/callback', passport.authenticate('google',
-  // { failureRedirect: '/login' }), (req, res) => {
-  //   // Successful authentication, redirect to original url or home.
-  //   let red = req.session.redirect_to || '/practice';
-  //   if (req.body.hash) red += `#${req.body.hash}`;
-  //   req.session.redirect_to = null;
-  //   delete req.session.redirect_to;
-  //   return res.redirect(red);
-  // });
 
   router.get('/logout', authController.logout);
 

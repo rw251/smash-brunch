@@ -45,8 +45,9 @@ module.exports = function brunchServer(PORT, PATH, CALLBACK) {
     process.exit();
   });
 
-  let port = PORT || config.server.port;
-  if (!port) port = config.server.port || '3333';
+  let port = config.server.port || PORT;
+  if (!port) port = config.server.port || '7674';
+  console.log(port);
   app.set('port', port);
   app.set('views', [path.join(__dirname, 'server/views')]);// , path.join(__dirname, 'shared/views')]);
   app.set('view engine', 'pug');
