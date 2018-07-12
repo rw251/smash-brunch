@@ -15,7 +15,9 @@ const init = function init() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/service-worker')
-      .then(() => { console.log('main.js -> Service Worker Registered'); });
+      .then(() => {
+        // console.log('main.js -> Service Worker Registered');
+      });
   }
 };
 

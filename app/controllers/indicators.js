@@ -28,14 +28,14 @@ const updateGlobalValue = prop => (changeEvent) => {
 };
 
 const wireUpIndex = () => {
-  console.log('wiring up');
+  // console.log('wiring up');
   $('.selectpicker').selectpicker();
   $('#indicatorList').on('change', updateGlobalValue('selectedIndicatorId'));
 };
 
 // params, state, url
 exports.index = (ctx) => {
-  console.log('on load script called...');
+  // console.log('on load script called...');
   global.selectedIndicatorId = ctx.params.id || 0;
   global.serverOrClientLoad()
     .onServer((ready) => {

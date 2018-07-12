@@ -7,7 +7,6 @@ const $ = require('jquery');
 const page = require('page');
 const breadcrumbs = require('./breadcrumbs');
 const qs = require('qs');
-const charts = require('./charts');
 
 let table;
 let trendTable;

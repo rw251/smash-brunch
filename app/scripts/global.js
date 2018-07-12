@@ -42,7 +42,7 @@ module.exports = {
       onServer: () => loadObject,
       onClient: () => loadObject,
       always: (callback) => {
-        console.log('always');
+        // console.log('always');
         if (callback && typeof callback === 'function') callback();
         return loadObject;
       },
@@ -50,7 +50,7 @@ module.exports = {
 
     if (server) {
       loadObject.onServer = (callback) => {
-        console.log('server load');
+        // console.log('server load');
         if (callback && typeof callback === 'function') {
           callback(() => hideLoading());
         } else {
@@ -61,7 +61,7 @@ module.exports = {
       };
     } else {
       loadObject.onClient = (callback) => {
-        console.log('client load');
+        // console.log('client load');
         if (callback && typeof callback === 'function') {
           callback(() => hideLoading());
         } else {

@@ -1,4 +1,4 @@
-{
+module.exports = {
   "extends": "airbnb-base",
   "env": {
     "browser": true,
@@ -19,6 +19,7 @@
     "object-curly-newline": ["error", {
       "ObjectExpression": { "multiline": true },
       "ObjectPattern": { "multiline": true }
-    }]
+    }],
+    "no-console": 0,
   }
-}
+};

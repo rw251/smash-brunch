@@ -17,7 +17,7 @@ const App = {
       global.user.email = $('#userEmail').val();
       global.serverLoad();
 
-      console.log(global);
+      // console.log(global);
 
       router.get.start({ dispatch: true }); // dispatch - whether to perform initial dispatch
       main.init();
