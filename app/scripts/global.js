@@ -10,7 +10,7 @@ const hideLoading = () => {
   $('.inline-loading-shade').fadeOut();
 };
 
-module.exports = {
+const globalObject = {
   isLoggedIn: false,
   user: false,
   selectedPracticeId: 0,
@@ -18,6 +18,8 @@ module.exports = {
   selectedDateId: 0,
 
   serverLoad: () => {
+    globalObject.isLoggedIn = $('#userLoggedIn').length > 0;
+    globalObject.user = { name: $('#userName').val(), email: $('#userEmail').val() };
     server = true;
   },
 
@@ -76,3 +78,5 @@ module.exports = {
     return loadObject;
   },
 };
+
+module.exports = globalObject;
